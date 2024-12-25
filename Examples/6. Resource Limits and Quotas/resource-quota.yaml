@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: pods-quota
+spec:
+  hard:
+    cpu: "5"
+    memory: 10Gi
+    pods: "10"
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx2
+  labels:
+    environment: production
+    app: nginx
+spec:
+  containers:
+  - name: mynginx2
+    image: nginx:1.14.2
+    resources:
+      requests:
+        cpu: 700m
+        memory: 200Mi
+      limits:
+        cpu: 700m
+        memory: 200Mi
+    ports:
+    - containerPort: 80
+

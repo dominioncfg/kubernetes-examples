@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-base-deployment
+  labels:
+    app: students-service
+    type: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      dbName: students-db
+  template:
+    metadata:
+      labels:
+        app: students-service
+        type: db
+        dbName: students-db
+    spec:
+      containers:
+      - name: sql-server
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        ports:
+        - containerPort: 1433
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: MSSQL_SA_PASSWORD
+          value: "PataDeCabra@2020"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-base-service
+spec:
+  type: ClusterIP
+  selector:
+    dbName: students-db
+  ports:
+    - protocol: TCP
+      port: 1433
+      targetPort: 1433

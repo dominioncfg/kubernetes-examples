@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-backends-deployment
+  labels:
+    app: students-service
+    type: backend
+    subtype: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      service-name: students-api
+  template:
+    metadata:
+      labels:
+        app: students-service
+        type: backend
+        subtype: api
+        service-name: students-api
+    spec:
+      containers:
+      - name: backend-api
+        image: students-api:v1.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: applicationUrl
+          value: "http://localhost:8080"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: NodePort
+  selector:
+    service-name: students-api
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

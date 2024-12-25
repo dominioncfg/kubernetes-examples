@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-frontend-deployment
+  labels:
+    app: students-service
+    type: frontend
+    subtype: http-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      service-name: students-frontend-server
+  template:
+    metadata:
+      labels:
+       app: students-service
+       type: frontend
+       subtype: http-server
+       service-name: students-frontend-server
+    spec:
+      containers:
+      - name: frontend-server
+        image: frontend-server:v1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-end-service
+spec:
+  type: NodePort
+  selector:
+    service-name: students-frontend-server
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

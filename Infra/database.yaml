@@ -20,6 +20,13 @@ spec:
       containers:
       - name: sql-server
         image: mcr.microsoft.com/mssql/server:2022-latest
+        resources:
+          limits:
+             cpu: 550m
+             memory: 1100Mi
+          requests:
+            cpu: 500m
+            memory: 1Gi            
         ports:
         - containerPort: 1433
         env:
@@ -27,6 +34,7 @@ spec:
           value: "Y"
         - name: MSSQL_SA_PASSWORD
           value: "PataDeCabra@2020"
+
 
 ---
 

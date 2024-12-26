@@ -18,7 +18,7 @@ minikube service backend-service --url
 
 3. Front End
 
-3.1 Get the Url from previous port and uptated in index.html
+3.1 Update the ConfigMap in frontend.yaml deployment with the url of the exposed port
 
 3.2 Build Frontend Image
 docker build -t frontend-server:v1.2 -f Infra/Html/Dockerfile Infra/html

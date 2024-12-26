@@ -8,23 +8,18 @@ kubectl get pods
 
 2. Describe Pod
 kubectl describe pod <PodName>
-3. Describe Api Resources
-kubectl api-Resources
 
-4. Remove Pod
+3. Remove Pod
 kubectl delete pod <PodName>
 
 5. Get Yaml of Pod
 kubectl get pod <PodName> -o yaml
 
-
 6- Connect to container 
 Kubectl exec -ti <PodName> -- <Command Ex, -- sh> 
 
-
 6. Get Logs Pod
 kubectl logs <PodName> <-f -> Live logs>
-
 
 4. Create From Yaml Manifest
 kubectl apply -f pod.yaml 
@@ -32,14 +27,9 @@ kubectl apply -f pod.yaml
 5. Delete from Yaml Mannifest
 kubectl delete -f pod.yaml 
 
-6. Pods With Multiple Containers
-
-7. Label 
-
 Others:
 Run Pod
 kubectl run mynginx --image=nginx --labels="app=hazelcast,env=prod"
-Kubectl exec -ti mynginx -- /bin/bash
 
 -------2. Replica Sets
 Replica set use labes to match pods even if they were already existing.
@@ -183,6 +173,28 @@ kubectl describe namespace <NamespaceName>
 Liveness -> Proves to know if a containers is alive at any given point in time
 Readiness-> Pod is ready to recieve traffic
 Startup-> For application that take to long to start
+----Config Maps
 
-1. Create a liveness Proves
-2. Create a readiness prove
+1. Create a config map from a file
+kubectl create configmap <Name> --from-file=<FilePath>
+
+2. Get All config Maps:
+kubectl get configmaps
+
+3. Describe
+kubectl describe configmap <Name>
+
+
+-------Secrets
+
+1. Create a secret from a file
+kubectl create secret generic <Name> -- from-file=<FilePath>
+
+2. Get Secrets:
+kubectl get secrets
+
+3. Describe Secret
+kubectl describe secret <Name>
+
+4. Delete Secret:
+kubectl delete secret my-secret

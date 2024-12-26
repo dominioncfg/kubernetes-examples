@@ -14,7 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{1A2BAE51
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D050E969-3BAB-43F9-A4E9-DA798A0FCF43}"
 	ProjectSection(SolutionItems) = preProject
-		KubernetesExample\Deployment.md = KubernetesExample\Deployment.md
 		Deployment.md = Deployment.md
 	EndProjectSection
 EndProject

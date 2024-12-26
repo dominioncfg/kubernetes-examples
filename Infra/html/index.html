@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Page Title</title>
+ <script src="/config/settings.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"
             integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8="
             crossorigin="anonymous"></script>
@@ -10,7 +11,7 @@
         $(document).ready(function () {
             console.log("Document Ready!");
 
-            axios.get('http://127.0.0.1:63577/Students')
+            axios.get(backendUrl + '/Students')
                 .then(function (response) {
                     var students = response.data;
                     var student = students[0];

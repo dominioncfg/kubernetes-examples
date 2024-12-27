@@ -198,3 +198,24 @@ kubectl describe secret <Name>
 
 4. Delete Secret:
 kubectl delete secret my-secret
+
+
+-----------Volumes
+Types:
+    EmptyDir: A folder shared by container in the logs, if the pod dies the data is lost
+    HostPath: A folder in the node where the pod is running, if the pod dies and it recreated in another node, the data wont be there
+    Cloud Volume: For workloads running in the cloud (Not really used)
+    Persistence Volume and Persistence Volume Claim: NOrmally used in cloud
+Reclaim Policies
+    Retain: When a PVV is removed Data is not lost
+    Recycle: Data is lost but PV is not delete
+    Delete: Data and PV are also removed
+
+1. Get Persistence volumes
+kubectl get persistentvolumes
+
+2. Get Persistence Volume Claims
+kubectl get persistentvolumeclaims
+
+3.Get Storage Class:
+kubectl get storageclass

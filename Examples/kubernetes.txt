@@ -219,3 +219,80 @@ kubectl get persistentvolumeclaims
 
 3.Get Storage Class:
 kubectl get storageclass
+
+
+-----RBAC
+Role vs Cluster Role: Roles are limited to a namespace, while Cluster role are for the whole cluste r  
+Certificate Signging Request
+    Common Name (CN) becomes the Kubernetes UserName
+    Organization becomes the Group 
+
+How to Create an user in Kubernetes:
+
+ 1. Create and sign a certificate for the user:
+    Create and Sign Certificate
+    1.1. Create certificate and Signing Request
+    openssl genrsa -out <CertificateName>.key 2048
+    1.2. Create a signing Request
+    openssql req -new -key <CertificateName>.key -out <Signed>.csr - subj "/CN=<UserName>/O=<Group>"
+    1.3. Sign the certificate (With Kubernetes Certificate)
+    openssl x509 -req -in <Signed>.csr -CA <PathToKubernetsCA>.crt - CAkey <PathToKubernetsCAKey>.key - CAcreateserial -out <Certificate>.crt - days 500 
+    1.4. Check the certificate:
+    openssl x509 -in <SignedCertificate>.crt -noout -text
+Example:
+openssl genrsa -out pedrito.key 2048
+openssl req -new -key pedrito.key -out pedrito.csr -subj "/CN=pedrito/O=developer" => this one doesnt work on git bash
+openssl x509 -req -in pedrito.csr -CA "C:\\Users\\josec\\.minikube\ca.crt" -CAkey "C:\\Users\\josec\\.minikube\ca.key" -CAcreateserial -out pedrito.crt -days 500 
+openssl x509 -in pedrito.crt -noout -text
+
+4.Configure Kubectl to use the signed certificate
+   4.1 Set the Credentials of User to Kubernetes Config:
+   kubectl config set-credentials your-username --client-certificate=/path/to/user.crt --client-key=/path/to/user.key --embed-certs=true
+
+   4.2 Add A new Context:
+   kubectl config set-context your-context --cluster=your-cluster --namespace=default --user=your-username
+
+   4.3 Switch to the context:
+   kubectl config use-context your-context
+
+kubectl config set-credentials pedrito --client-certificate="C:\\Users\\josec\\source\\repos\\KubernetesExample\\Examples\\10.Users\\pedrito.crt" --client-key="C:\\Users\\josec\\source\\repos\\KubernetesExample\\Examples\\10.Users\\pedrito.key" --embed-certs=true
+kubectl config set-context pedri --cluster=minikube --namespace=default --user=pedrito
+kubectl config use-context pedri
+
+
+Roles Commands: 
+1. Get Roles
+kubectl get roles
+2. Describe Role
+kubectl describe role <Name>
+
+Roles Binding Commands: 
+1. Get Roles Bindings
+$ kubectl get rolebindings
+2. Describe Role
+kubectl describe rolebinding <Name>
+
+
+Cluster Roles Commands: 
+1. Get Roles
+kubectl get clusterroles
+2. Describe Role
+kubectl describe clusterrole system:controller:ttl-controller <Name>
+
+Cluster Roles Binding Commands: 
+1. Get Role Binding
+$ kubectl get rolebindings
+2. Describe Role
+kubectl describe clusterrolebinding <Name>
+
+--Apply Roles as groups
+
+----Service Accounts
+Every namespace has a service account and each of them are associated to a secret.
+
+1. List Service Account
+kubectl get serviceaccounts
+
+2. Describe 
+kubectl describe serviceaccount default
+

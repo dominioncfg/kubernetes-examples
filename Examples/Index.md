@@ -296,3 +296,26 @@ kubectl get serviceaccounts
 2. Describe 
 kubectl describe serviceaccount default
 
+
+--------JOBS------
+
+1. 
+kubectl get job
+
+Create Jonbs
+   -Number of Completions and Parallelism
+   -Number of Failed Before is considered Failed
+   -RestartPolicy
+   -Deadline
+   -Create a cron  Job
+
+
+2. Deamon Sets
+A deployment that runs a copy of a service on each node
+
+
+Steful Sets:
+1. Pods get an incremental id, they are created in ascending order waiting for the previous one to be fully created.
+Deletion works in the same way but descending order, each pod even after restart they will get the exact same state (volumes) attached
+
+

@@ -7,7 +7,7 @@ metadata:
     type: backend
     subtype: api
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       service-name: students-api
@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: backend-api
-        image: students-api:v1.2
+        image: students-api:v1.3
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -62,7 +62,7 @@ kind: Service
 metadata:
   name: backend-service
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     service-name: students-api
   ports:

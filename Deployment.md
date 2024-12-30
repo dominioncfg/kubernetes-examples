@@ -1,36 +1,37 @@
-1. Database
+1. ------------Database------------
 
 1.1 Apply Database Deployment
 kubectl apply -f Infra/database.yaml
 
-2. Backend 
+2. ------------Backend------------ 
 2.1 Build Backend Image
-docker build -t students-api:v1.2 -f KubernetesExample/Dockerfile .
+docker build -t students-api:v1.3 -f KubernetesExample/Dockerfile .
 
 2.2 Load Backend Image to Minikube Cluster
-minikube image load students-api:v1.2
+minikube image load students-api:v1.3
 
 2.3 Apply Backend Deployment
 kubectl apply -f Infra/backend.yaml
 
-2.4 Expsose Backend Service outside the cluster
-minikube service backend-service --url
+3. ------------Front End------------
 
-3. Front End
+3.1 Build Frontend Image
+docker build -t frontend-server:v1.3 -f Infra/Html/Dockerfile Infra/html
 
-3.1 Update the ConfigMap in frontend.yaml deployment with the url of the exposed port
+3.2 Load Frontend Image into the Minkube Cluster
+minikube image load frontend-server:v1.3
 
-3.2 Build Frontend Image
-docker build -t frontend-server:v1.2 -f Infra/Html/Dockerfile Infra/html
-
-3.3 Load Frontend Image into the Minkube Cluster
-minikube image load frontend-server:v1.2
-
-3.4 Apply Frontend Deployment
+3.3 Apply Frontend Deployment
 kubectl apply -f Infra/frontend.yaml
 
-3.5 Expose Frontend Service outside the cluster
-minikube service front-end-service --url
+------------
+
+4. ------------Ingress------------
+
+4.1 Setup and Ngnix Ingress Controller (Examples/Ingress)
+
+4.2 Deploy the Routes
+kubectl apply -f Infra/ingress-routes.yaml
 
 
 ------------
@@ -39,6 +40,7 @@ Delete all Resources  from the cluster
 kubectl delete -f Infra/database.yaml
 kubectl delete -f Infra/backend.yaml
 kubectl delete -f Infra/frontend.yaml
+kubectl delete -f Infra/ingress-routes.yaml
 ------------- 
 
 1. Run a pod inside the cluster and connect to the database

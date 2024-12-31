@@ -81,14 +81,14 @@ kubectl apply -f Infra/frontend.yaml
 ## Deploy Ingress Routes
 
 ### Setup and Nginx Ingress Controller
-Use the script located in `Examples/13.Ingress`. Only the Controller is needed
+Use the script located in `Examples/13.Ingress/02.Controller.yaml`. Only the Controller is needed
 
 ### Deploy the Routes
 ```bash
 kubectl apply -f Infra/ingress-routes.yaml
 ```
 
-### Deploy the Nginx Ingress
+### Expose the Nginx Ingress (Only requireded in Minikube)
 ```bash
 minikube service ingress-nginx-controller --url  -n ingress-nginx
 ```
@@ -96,7 +96,7 @@ minikube service ingress-nginx-controller --url  -n ingress-nginx
 
 ### Open the frontend App
 ---
-The App should be listening in `http://127.0.0.1:XXXXXX/app`
+The App should be listening in `http://127.0.0.1:XXXXX/app`
 
 ## Clean up all resources after you finish
 ```bash

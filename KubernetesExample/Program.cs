@@ -15,13 +15,6 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
-{
-    var context = serviceScope.ServiceProvider.GetRequiredService<AppDbContext>();
-    context.Database.Migrate();
-}
-
-
 app.UseCors(builder =>
         builder
         .AllowAnyOrigin()

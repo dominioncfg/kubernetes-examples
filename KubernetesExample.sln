@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{1A2BAE51-1CA9-4C0E-8CD4-DCA756DD0323}"
 	ProjectSection(SolutionItems) = preProject
 		Infra\backend.yaml = Infra\backend.yaml
+		Infra\database-migrator.yaml = Infra\database-migrator.yaml
 		Infra\database.yaml = Infra\database.yaml
 		Infra\frontend.yaml = Infra\frontend.yaml
 		Infra\ingress-routes.yaml = Infra\ingress-routes.yaml
@@ -18,9 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Deployment.md = Deployment.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesExample.DbMigratorRunner", "KubernetesExample.DbMigratorRunner\KubernetesExample.DbMigratorRunner.csproj", "{B6AF6B13-6976-4729-8C0F-2AD5C9BEE647}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KubernetesExample.DbMigratorRunner", "KubernetesExample.DbMigratorRunner\KubernetesExample.DbMigratorRunner.csproj", "{B6AF6B13-6976-4729-8C0F-2AD5C9BEE647}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesExample.SharedDataStorage", "KubernetesExample.SharedDataStorage\KubernetesExample.SharedDataStorage.csproj", "{5BF6B731-3F6B-433D-9965-D10432F218D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KubernetesExample.SharedDataStorage", "KubernetesExample.SharedDataStorage\KubernetesExample.SharedDataStorage.csproj", "{5BF6B731-3F6B-433D-9965-D10432F218D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

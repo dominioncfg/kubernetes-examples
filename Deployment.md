@@ -25,6 +25,23 @@ The guide is tested with minikube in mind.
 kubectl apply -f Infra/database.yaml
 ```
 
+## Apply Database Migrations
+
+### Build Database Migrator Image Image
+```bash
+docker build -t students-db-migrator:v1.3 -f KubernetesExample.DbMigratorRunner/Dockerfile ..
+```
+
+### Load Database Migrator Image to Minikube Cluster
+```bash
+minikube image load students-db-migrator:v1.3
+```
+
+### Deploy Migrations Job
+```bash
+kubectl apply -f Infra/database-migrator.yaml
+```
+
 ## Deploy the Backend
 
 ### Build Backend Image
@@ -64,21 +81,30 @@ kubectl apply -f Infra/frontend.yaml
 ## Deploy Ingress Routes
 
 ### Setup and Nginx Ingress Controller
-Use the script located in `Examples/13.Ingress`.
+Use the script located in `Examples/13.Ingress`. Only the Controller is needed
 
 ### Deploy the Routes
 ```bash
 kubectl apply -f Infra/ingress-routes.yaml
 ```
 
+### Deploy the Nginx Ingress
+```bash
+minikube service ingress-nginx-controller --url  -n ingress-nginx
+```
+
+
+### Open the frontend App
 ---
+The App should be listening in `http://127.0.0.1:XXXXXX/app`
 
 ## Clean up all resources after you finish
 ```bash
-kubectl delete -f Infra/database.yaml
-kubectl delete -f Infra/backend.yaml
-kubectl delete -f Infra/frontend.yaml
 kubectl delete -f Infra/ingress-routes.yaml
+kubectl delete -f Infra/frontend.yaml
+kubectl delete -f Infra/backend.yaml
+kubectl delete -f Infra/database-migrator.yaml
+kubectl delete -f Infra/database.yaml
 ```
 
 ---

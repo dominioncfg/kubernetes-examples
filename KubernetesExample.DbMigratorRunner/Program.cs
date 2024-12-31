@@ -9,10 +9,6 @@ using var host = CreateHost(args);
 using var dbContext = GetDbContext(host);
 await dbContext.Database.MigrateAsync();
 
-await host.RunAsync();
-
-
-
 static IHost CreateHost(string[] args)
 {
     return Host.CreateDefaultBuilder(args)

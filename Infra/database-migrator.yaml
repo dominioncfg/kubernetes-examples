@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: students-database-migrator-job
+spec:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 300
+  activeDeadlineSeconds: 100
+  template:
+    spec:
+      containers:
+      - name: students-database-migrator
+        image: students-db-migrator:v1.3
+      restartPolicy: OnFailure

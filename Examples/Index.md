@@ -299,8 +299,14 @@ kubectl describe serviceaccount default
 
 --------JOBS------
 
-1. 
-kubectl get job
+List Jobs:
+kubectl get jobs
+
+Describe a Job:
+kubectl describe job example-job
+
+View Pods of a Job:
+kubectl get pods --selector=job-name=example-job
 
 Create Jonbs
    -Number of Completions and Parallelism
@@ -309,13 +315,133 @@ Create Jonbs
    -Deadline
    -Create a cron  Job
 
+List CronJobs:
+kubectl get cronjobs
 
-2. Deamon Sets
-A deployment that runs a copy of a service on each node
+Describe a CronJob:
+kubectl describe cronjob example-cronjob
+
+View Created Jobs: CronJobs create Jobs based on the schedule. List the Jobs with:
+kubectl get jobs
+
+
+
+------ Deamon Sets
+Deploying the DaemonSet
+
+    Save the YAML to a file, e.g., nginx-daemonset.yaml.
+
+    Apply the DaemonSet using kubectl:
+
+kubectl apply -f nginx-daemonset.yaml
+
+Verify the DaemonSet is running:
+
+kubectl get daemonsets
 
 
 Steful Sets:
 1. Pods get an incremental id, they are created in ascending order waiting for the previous one to be fully created.
 Deletion works in the same way but descending order, each pod even after restart they will get the exact same state (volumes) attached
 
+What is a StatefulSet in Kubernetes?
+
+A StatefulSet is a Kubernetes resource used to manage stateful applications that require unique, persistent identities and stable storage. Unlike Deployments or ReplicaSets, StatefulSets ensure that each Pod:
+
+    Has a unique identity (e.g., pod-0, pod-1).
+    Retains its identity across restarts.
+    Maintains a stable hostname (DNS).
+    Can be associated with persistent storage, ensuring data is not lost when a Pod is rescheduled.
+
+Key Characteristics of StatefulSets
+
+    Stable Pod Names: Pods are created in order and have predictable names like <statefulset-name>-<ordinal>.
+    Ordered Deployment and Scaling: Pods are created, updated, and deleted sequentially.
+    Persistent Storage: Each Pod can have its own PersistentVolumeClaim (PVC) for storage.
+    Use Cases:
+        Databases (e.g., MySQL, MongoDB, Cassandra).
+        Distributed systems (e.g., Kafka, Zookeeper).
+        Stateful applications that need consistent DNS names or persistent data.
+
+StatefulSet Example
+
+Here’s a simple example of a StatefulSet deploying an NGINX server, where each Pod has its own identity and persistent volume:
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-statefulset
+spec:
+  serviceName: nginx-service
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-storage
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: nginx-storage
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
+
+Explanation of the YAML
+Metadata
+
+    name: The name of the StatefulSet.
+
+Service Name
+
+    serviceName: Defines the headless service used to manage Pod DNS entries (e.g., nginx-statefulset-0, nginx-statefulset-1).
+
+Replicas
+
+    replicas: Specifies the number of Pods to run in the StatefulSet.
+
+Pod Template
+
+    template: Specifies the Pod definition:
+        containers: Defines the container(s) to run in each Pod.
+        volumeMounts: Mounts the PersistentVolumeClaim to a specific path.
+
+Persistent Volumes
+
+    volumeClaimTemplates: Template to dynamically provision persistent volumes for each Pod:
+        accessModes: Specifies how the volume can be accessed (ReadWriteOnce allows only one node to mount it at a time).
+        storage: Specifies the size of the volume (e.g., 1Gi).
+
+Deploying the StatefulSet
+
+    Save the YAML file as nginx-statefulset.yaml.
+
+    Apply it using kubectl:
+
+kubectl apply -f nginx-statefulset.yaml
+
+Verify the StatefulSet and Pods:
+
+kubectl get statefulsets
+kubectl get pods
+
+The Pods will be named sequentially, like nginx-statefulset-0, nginx-statefulset-1, and nginx-statefulset-2.
+
+Check the Persistent Volume Claims:
+
+kubectl get pvc
+
+Each Pod will have its own PVC, e.g., nginx-storage-nginx-statefulset-0.
 

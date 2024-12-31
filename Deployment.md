@@ -20,53 +20,53 @@ The guide is tested with minikube in mind.
 
 ## Deploy the Database
 
-### 1.1 Apply Database Deployment
+### Apply Database Deployment
 ```bash
 kubectl apply -f Infra/database.yaml
 ```
 
-## 2. Deploy the Backend
+## Deploy the Backend
 
-### 2.1 Build Backend Image
+### Build Backend Image
 ```bash
 docker build -t students-api:v1.3 -f KubernetesExample/Dockerfile .
 ```
 
-### 2.2 Load Backend Image to Minikube Cluster
+### Load Backend Image to Minikube Cluster
 ```bash
 minikube image load students-api:v1.3
 ```
 
-### 2.3 Apply Backend Deployment
+### Apply Backend Deployment
 ```bash
 kubectl apply -f Infra/backend.yaml
 ```
 
-## 3. Deploy the Frontend
+## Deploy the Frontend
 
-### 3.1 Build Frontend Image
+### Build Frontend Image
 ```bash
 docker build -t frontend-server:v1.3 -f Infra/Html/Dockerfile Infra/html
 ```
 
-### 3.2 Load Frontend Image into the Minikube Cluster
+### Load Frontend Image into the Minikube Cluster
 ```bash
 minikube image load frontend-server:v1.3
 ```
 
-### 3.3 Apply Frontend Deployment
+### Apply Frontend Deployment
 ```bash
 kubectl apply -f Infra/frontend.yaml
 ```
 
 ---
 
-## 4. Deploy Ingress Routes
+## Deploy Ingress Routes
 
-### 4.1 Setup and Nginx Ingress Controller
+### Setup and Nginx Ingress Controller
 Use the script located in `Examples/13.Ingress`.
 
-### 4.2 Deploy the Routes
+### Deploy the Routes
 ```bash
 kubectl apply -f Infra/ingress-routes.yaml
 ```
@@ -100,7 +100,7 @@ GO
 
 ---
 
-### 6. For Local Development
+### For Local Development
 
 ### Run SQL Server Image
 ```bash

@@ -1,10 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.EnvironmentVariables;
-using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.Configuration.Memory;
-
-
 
 
 namespace KubernetesExample.Controllers;
@@ -14,7 +8,6 @@ namespace KubernetesExample.Controllers;
 public class SettingsController : ControllerBase
 {
     private readonly IConfiguration _configuration;
-    private readonly AppDbContext context;
 
     public SettingsController(IConfiguration configuration)
     {
@@ -40,8 +33,6 @@ public class SettingsController : ControllerBase
         };
         return Task.FromResult<object>(result);
     }
-
-
 }
 
 

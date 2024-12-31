@@ -111,3 +111,8 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=PataDeCabra@2020" -p 1433:14
 ```bash
 docker run --network host -d students-api:v1.3
 ```
+
+### Add Migration
+```bash
+dotnet ef migrations add InitialMigration --project KubernetesExample.SharedDataStorage  --startup-project KubernetesExample.DbMigratorRunner -c AppDbContext -o Migrations
+```

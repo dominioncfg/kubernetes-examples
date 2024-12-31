@@ -1,447 +1,600 @@
---------Useful
-Get Api Resouces
+# Kubernetes Quick Guide
+
+## Get Api Resources
+
+```bash
 kubectl api-resources
+```
 
--------1. Pods
-1. Get List of pods
+---
+
+## Pods
+
+### List pods
+
+```bash
 kubectl get pods
+```
 
-2. Describe Pod
+### Describe Pod
+
+```bash
 kubectl describe pod <PodName>
+```
 
-3. Remove Pod
+### Remove Pod
+
+```bash
 kubectl delete pod <PodName>
+```
 
-5. Get Yaml of Pod
+### Get YAML of Pod
+
+```bash
 kubectl get pod <PodName> -o yaml
+```
 
-6- Connect to container 
-Kubectl exec -ti <PodName> -- <Command Ex, -- sh> 
+### Connect to a single pod container
 
-6. Get Logs Pod
-kubectl logs <PodName> <-f -> Live logs>
+```bash
+kubectl exec -ti <PodName> -- <Command Ex, -- sh>
+```
 
-4. Create From Yaml Manifest
-kubectl apply -f pod.yaml 
+### Get Logs from a single conatiner pod
+```bash
+kubectl logs <PodName> [-f -> Live logs]
+```
 
-5. Delete from Yaml Mannifest
-kubectl delete -f pod.yaml 
+### Create Pod from YAML Manifest
 
-Others:
-Run Pod
+```bash
+kubectl apply -f pod.yaml
+```
+
+### Delete Pod from YAML Manifest
+
+```bash
+kubectl delete -f pod.yaml
+```
+
+### Run Pod from image
+
+```
 kubectl run mynginx --image=nginx --labels="app=hazelcast,env=prod"
+```
 
--------2. Replica Sets
-Replica set use labes to match pods even if they were already existing.
+---
 
-1. Create Replica Sets from manifest 
-kubectl apply -f rs.yaml 
+## Replica Sets
 
-2. Get List of Replicaset
+Replica sets use labels to match Pods, even if they already exist.
+
+### Get List of Replica Sets
+
+```bash
 kubectl get replicaset
+```
 
+### Describe Replicaset
 
------3. Deployments
-Deployment Manage Replica Sets
-1. Get Status of Deployments
+```bash
+ kubectl describe replicaset frontend  <Name>
+```
+
+---
+
+## Deployments
+
+Deployments resource manage Replica Sets.
+
+### Get Status of Deployments
+
+```bash
 kubectl rollout status deployment <DeploymentName>
+```
 
-2. Get List of Deployments
+### Lists Deployments
+
+```bash
 kubectl get deployment
+```
 
-3. Describe Deployments
-kubectl get deployment  <DeploymentName> -o yaml
+### Get YAML of a Deployment
 
-4. Describe Deployments
-kubectl describe deployment  <DeploymentName>
+```bash
+kubectl get deployment <DeploymentName> -o yaml
+```
 
+### Describe Deployment
 
-5. Apply and Update Deployment
+```bash
+kubectl describe deployment <DeploymentName>
+```
+
+### Apply and Update Deployment
+```bash
 kubectl apply -f <DeploymentFileName.yaml>
+```
 
-
-6. See history of deployment
+### See History of Deployment
+```bash
 kubectl rollout history deployment <DeploymentName>
+```
 
-7. Use Annotations
+### Rollback Deployment
+```bash
+kubectl rollout undo deployment <DeploymentName> --to-revision=<RevisionNumber>
+```
 
-8. Get Revision Changes
-kubectl rollout history deployment <DeploymentName> --revision=<RevistionNumber>
+---
 
+## Services
 
-9. Rollback
-kubectl rollout undo deployment <DeploymentName> --to-revision=<RevisitonNumber>
+Services watch Pods with given labels and distribute the load among them. They have a static IP and create endpoints for Pods.
 
+### Types of Services:
+1. **ClusterIP**: Internal IP within the cluster (default).
+2. **NodePort**: Exposes a port externally on each Node.
+3. **LoadBalancer**: Cloud-based; creates a load balancer resource.
 
-------Services
-Services watch pods with given labels and distributes the load between them it has a static ip
-Services create a endpoint behind the scenes and register pods in that endpoint
-Service use the service name as dns (needs to be unique between dns)
-Services Types
-    1. Cluster IP: Internal IP in the cluster, is constant over time.
-    2. NodePort: Expose a port in the Node externally (Behind the scenes it creates a ClusterIP + Opens the port to the external traffic)
-    3. LoadBalancer: Only works for cloud, behind the scenes it creates a load balancer resource in the cloud and register a node port in that resource
+### Commands
 
-1. Create a Service
+#### Create a Service
 
+```bash
+kubectl apply -f service.yaml
+```
 
-2. Get Services
+#### Get Services
+
+```bash
 kubectl get services [-l app=front]
+```
 
-3. Describe Service
+#### Describe Service
+
+```bash
 kubectl describe service <ServiceName>
+```
 
-4. Describe endpoints of a service
+#### Describe Endpoints of a Service
+
+```bash
 kubectl describe endpoints <ServiceName>
+```
 
+---
 
-------Namespaces
+## Namespaces
 
-1. Get All namespaces
+### DNS for Namespace
+`<ServiceName>.<Namespace>.svc.cluster.local`
+
+### List Namespaces
+
+```bash
 kubectl get namespaces
+```
 
-2. Create Namespaces
+### Create Namespaces
+
+```bash
 kubectl create namespace <Name>
+```
 
-3. Get Labels 
+### Get Labels of Namespaces
+
+```bash
 kubectl get namespaces --show-labels
+```
 
-4. Describe
-Kubectl describe namespaces <Name>
+### Describe a Namespace
 
-5. Create Namespace using yaml
+```bash
+kubectl describe namespaces <Name>
+```
 
-6. Get pods in namespace
+### Create Namespace using YAML
+
+```bash
+kubectl apply -f namespace.yaml
+```
+
+### Get Pods in Namespace
+
+```bash
 kubectl get pods -n <Name>
--> Delete in namespace:
-kubectl delete pod <PodName> -n <Name>
+```
 
-7. Apply In namespace
+#### Delete in Namespace
+
+```bash
+kubectl delete pod <PodName> -n <Name>
+```
+
+### Apply in Namespace
+
+```bash
 kubectl apply -f <FileName>.yaml -n <Name>
 kubectl apply -f pods.yaml -n development
+```
 
-8. Deploy to namespace
+### Create a Context in Kubernetes with Default Namespace
 
-
-9.DNS for namespace:
-Access DSN for Services in different namespaces: <ServiceName>.<Namespace>.svc.cluster.local
-
-10. Create a context in kubernetes with defaul namespace
+```bash
 kubectl config current-context
 kubectl config view
 kubectl set-context <Name>  --namespace=<NamespaceName> --cluster=<ClusterName> --user=<UserName>
 kubectl config use-context <ContextName>
+```
 
+```bash
 kubectl config set-context minikube-development  --namespace=development --cluster=minikube --user=minikube
 kubectl config use-context minikube-development
+```
 
--------Resource Limits and Requests
-1. Apply a limit of cpu and ram to a pod
-Request maximun can be exceded up to the Limit max as long as the are available resources in the Kubernetes 
+---
 
--------Limits Range
-Apply request and limits to individual objects in namespace.
+## Resource Limits and Requests
 
-1. APply a limit range from yaml
+### Apply a Limit of CPU and RAM to a Pod
 
-2. Get all limit range
+Request maximum can be exceeded up to the limit as long as resources are available in Kubernetes.
+
+---
+
+## Limit Range
+
+Apply requests and limits to individual objects in a namespace.
+
+### List Limit Ranges
+
+```bash
 kubectl get limitrange
+```
 
-3. Describe 
+### Describe Limit Range
+
+```bash
 kubectl describe limitrange <Name> -n <Namespace>
+```
 
-4. Limit can be seen by describing the namespace
+### Limits Can Be Seen by Describing the Namespace
+
+```bash
 kubectl describe namespace default
+```
 
+---
 
+## Resource Quota
 
--------Resource Quota
-Limit the overall resources consumed by a namespace
+Limit the overall resources consumed by a namespace.
 
-1. Apply a resource quota from yaml
+### Apply a Resource Quota from YAML
+```bash
+kubectl apply -f resourcequota.yaml
+```
 
-2. Get all resource quotas:
-kubectl get resourcequotas 
+### Get All Resource Quotas
 
-3.Describe Resource Quota
+```bash
+kubectl get resourcequotas
+```
+
+### Describe Resource Quota
+```bash
 kubectl describe resource quota
+```
 
-2. Quotas can also be shown by describing the namespace 
+### Quotas Can Be Shown by Describing the Namespace
+```bash
 kubectl describe namespace <NamespaceName>
+```
 
-----Probes:
-Liveness -> Proves to know if a containers is alive at any given point in time
-Readiness-> Pod is ready to recieve traffic
-Startup-> For application that take to long to start
-----Config Maps
+---
 
-1. Create a config map from a file
+## Probes
+
+- **Liveness Probe**: Checks if a container is alive at any given time.
+- **Readiness Probe**: Checks if a pod is ready to receive traffic.
+- **Startup Probe**: For applications that take too long to start.
+
+---
+
+## Config Maps
+
+### Create a Config Map from a File
+
+```bash
 kubectl create configmap <Name> --from-file=<FilePath>
+```
 
-2. Get All config Maps:
+### List Config Maps
+
+```bash
 kubectl get configmaps
+```
 
-3. Describe
+### Describe Config Map
+
+```bash
 kubectl describe configmap <Name>
 
+```
 
--------Secrets
+---
 
-1. Create a secret from a file
-kubectl create secret generic <Name> -- from-file=<FilePath>
+## Secrets
 
-2. Get Secrets:
+### Create a Secret from a File
+
+```bash
+kubectl create secret generic <Name> --from-file=<FilePath>
+```
+
+### List Secrets
+
+```bash
 kubectl get secrets
+```
 
-3. Describe Secret
+### Describe Secret
+
+```bash
 kubectl describe secret <Name>
+```
 
-4. Delete Secret:
+### Delete Secret
+
+```bash
 kubectl delete secret my-secret
+```
 
+---
 
------------Volumes
-Types:
-    EmptyDir: A folder shared by container in the logs, if the pod dies the data is lost
-    HostPath: A folder in the node where the pod is running, if the pod dies and it recreated in another node, the data wont be there
-    Cloud Volume: For workloads running in the cloud (Not really used)
-    Persistence Volume and Persistence Volume Claim: NOrmally used in cloud
-Reclaim Policies
-    Retain: When a PVV is removed Data is not lost
-    Recycle: Data is lost but PV is not delete
-    Delete: Data and PV are also removed
+## Volumes
 
-1. Get Persistence volumes
+### Volume Types:
+- **EmptyDir**: Shared folder by containers in the pod; data is lost if the pod dies.
+- **HostPath**: A folder in the node where the pod runs; data is not retained if the pod restarts in a different node.
+- **Cloud Volume**: For workloads running in the cloud.
+- **Persistent Volume (PV) and Persistent Volume Claim (PVC)**: Typically used in cloud environments.
+
+### Reclaim Policies:
+- **Retain**: Data is not lost when the PV is removed.
+- **Recycle**: Data is lost but the PV is not deleted.
+- **Delete**: Data and the PV are both removed.
+
+### List Persistent Volumes
+
+```bash
 kubectl get persistentvolumes
+```
 
-2. Get Persistence Volume Claims
+### Get Persistent Volume Claims
+
+```bash
 kubectl get persistentvolumeclaims
+```
 
-3.Get Storage Class:
+### Get Storage Classes
+
+```bash
 kubectl get storageclass
+```
 
+---
 
------RBAC
-Role vs Cluster Role: Roles are limited to a namespace, while Cluster role are for the whole cluste r  
-Certificate Signging Request
-    Common Name (CN) becomes the Kubernetes UserName
-    Organization becomes the Group 
+## Role Based Access Control (RBAC)
 
-How to Create an user in Kubernetes:
+### Roles vs Cluster Roles
+- **Roles** are limited to a namespace, while **Cluster Roles** are for the entire cluster.
 
- 1. Create and sign a certificate for the user:
-    Create and Sign Certificate
-    1.1. Create certificate and Signing Request
-    openssl genrsa -out <CertificateName>.key 2048
-    1.2. Create a signing Request
-    openssql req -new -key <CertificateName>.key -out <Signed>.csr - subj "/CN=<UserName>/O=<Group>"
-    1.3. Sign the certificate (With Kubernetes Certificate)
-    openssl x509 -req -in <Signed>.csr -CA <PathToKubernetsCA>.crt - CAkey <PathToKubernetsCAKey>.key - CAcreateserial -out <Certificate>.crt - days 500 
-    1.4. Check the certificate:
+### Certificate Signing Request
+
+The Common Name (CN) becomes the Kubernetes Username, and the Organization becomes the Group.
+
+### How to Create a User in Kubernetes
+
+#### Create and Sign a Certificate for the User
+1. Generate a private key:
+
+    ```bash
+        openssl genrsa -out <CertificateName>.key 2048
+    ```
+2. Create a signing request:
+    ```bash
+    openssl req -new -key <CertificateName>.key -out <Signed>.csr -subj "/CN=<UserName>/O=<Group>"
+    ```
+3. Sign the certificate:
+    ```bash
+    openssl x509 -req -in <Signed>.csr -CA <PathToKubernetesCA>.crt -CAkey <PathToKubernetesCAKey>.key -CAcreateserial -out <Certificate>.crt -days 500
+    ```
+4. Check the certificate:
+
+    ```bash
     openssl x509 -in <SignedCertificate>.crt -noout -text
-Example:
+    ```
+
+#### Example
+```bash
 openssl genrsa -out pedrito.key 2048
 openssl req -new -key pedrito.key -out pedrito.csr -subj "/CN=pedrito/O=developer" => this one doesnt work on git bash
 openssl x509 -req -in pedrito.csr -CA "C:\\Users\\josec\\.minikube\ca.crt" -CAkey "C:\\Users\\josec\\.minikube\ca.key" -CAcreateserial -out pedrito.crt -days 500 
 openssl x509 -in pedrito.crt -noout -text
+```
+---
 
-4.Configure Kubectl to use the signed certificate
-   4.1 Set the Credentials of User to Kubernetes Config:
+#### Configure Kubectl to use the signed certificate
+1. Set the Credentials of User to Kubernetes Config
+   ```bash
    kubectl config set-credentials your-username --client-certificate=/path/to/user.crt --client-key=/path/to/user.key --embed-certs=true
+    ```
+2. Add A new Context:
 
-   4.2 Add A new Context:
+   ```
    kubectl config set-context your-context --cluster=your-cluster --namespace=default --user=your-username
+   ```
 
-   4.3 Switch to the context:
+3. Switch to the context:
+  
+   ```
    kubectl config use-context your-context
+   ```
 
+#### Example
+```bash
 kubectl config set-credentials pedrito --client-certificate="C:\\Users\\josec\\source\\repos\\KubernetesExample\\Examples\\10.Users\\pedrito.crt" --client-key="C:\\Users\\josec\\source\\repos\\KubernetesExample\\Examples\\10.Users\\pedrito.key" --embed-certs=true
 kubectl config set-context pedri --cluster=minikube --namespace=default --user=pedrito
 kubectl config use-context pedri
+```
 
+### Roles
 
-Roles Commands: 
-1. Get Roles
+#### List Roles
+
+```bash
 kubectl get roles
-2. Describe Role
-kubectl describe role <Name>
+```
 
-Roles Binding Commands: 
-1. Get Roles Bindings
-$ kubectl get rolebindings
-2. Describe Role
-kubectl describe rolebinding <Name>
+#### Describe Role
 
+```bash
+kubectl describe role
+```
 
-Cluster Roles Commands: 
-1. Get Roles
+---
+
+### Roles Binding
+
+#### Get Roles Bindings
+
+```bash
+kubectl get rolebindings
+```
+
+#### Describe Role Binding
+```bash
+kubectl describe rolebinding
+```
+
+---
+
+### Cluster Roles Commands:
+
+#### List Cluster Roles
+```bash
 kubectl get clusterroles
-2. Describe Role
-kubectl describe clusterrole system:controller:ttl-controller <Name>
+```
 
-Cluster Roles Binding Commands: 
-1. Get Role Binding
-$ kubectl get rolebindings
-2. Describe Role
-kubectl describe clusterrolebinding <Name>
+#### Describe Cluster Role
+```bash
+kubectl describe clusterrole system:controller:ttl-controller
+```
 
---Apply Roles as groups
+---
 
-----Service Accounts
+### Cluster Roles Binding:
+
+#### List Role Bindings
+
+```bash
+kubectl get rolebindings
+```
+
+#### Describe Role Binding
+
+```bash
+kubectl describe clusterrolebinding
+```
+
+---
+
+
+## Service Accounts
+
 Every namespace has a service account and each of them are associated to a secret.
 
-1. List Service Account
+### List Service Account
+```bash
 kubectl get serviceaccounts
+```
 
-2. Describe 
+### Describe Service Account
+```bash
 kubectl describe serviceaccount default
+```
 
+---
 
---------JOBS------
+## Jobs
 
-List Jobs:
+### List Jobs
+
+```bash
 kubectl get jobs
+```
 
-Describe a Job:
+### Describe a Job
+
+```bash
 kubectl describe job example-job
+```
 
-View Pods of a Job:
+### View Pods of a Job
+
+```bash
 kubectl get pods --selector=job-name=example-job
+```
 
-Create Jonbs
-   -Number of Completions and Parallelism
-   -Number of Failed Before is considered Failed
-   -RestartPolicy
-   -Deadline
-   -Create a cron  Job
-
-List CronJobs:
+### List CronJobs
+```bash
 kubectl get cronjobs
+```
 
-Describe a CronJob:
+### Describe a CronJob
+```bash
 kubectl describe cronjob example-cronjob
+```
 
-View Created Jobs: CronJobs create Jobs based on the schedule. List the Jobs with:
-kubectl get jobs
+---
 
+## DaemonSets
 
+### List
 
------- Deamon Sets
-Deploying the DaemonSet
-
-    Save the YAML to a file, e.g., nginx-daemonset.yaml.
-
-    Apply the DaemonSet using kubectl:
-
-kubectl apply -f nginx-daemonset.yaml
-
-Verify the DaemonSet is running:
-
+```bash
 kubectl get daemonsets
+```
 
+---
 
-Steful Sets:
-1. Pods get an incremental id, they are created in ascending order waiting for the previous one to be fully created.
-Deletion works in the same way but descending order, each pod even after restart they will get the exact same state (volumes) attached
+## StatefulSets
 
-What is a StatefulSet in Kubernetes?
+Pods get an incremental ID; they are created in ascending order, waiting for the previous one to be fully created. Deletion works in the same way but in descending order. Each Pod, even after restart, will get the exact same state (volumes) attached.
+
+### What is a StatefulSet in Kubernetes?
 
 A StatefulSet is a Kubernetes resource used to manage stateful applications that require unique, persistent identities and stable storage. Unlike Deployments or ReplicaSets, StatefulSets ensure that each Pod:
+- Has a unique identity (e.g., pod-0, pod-1).
+- Retains its identity across restarts.
+- Maintains a stable hostname (DNS).
+- Can be associated with persistent storage, ensuring data is not lost when a Pod is rescheduled.
 
-    Has a unique identity (e.g., pod-0, pod-1).
-    Retains its identity across restarts.
-    Maintains a stable hostname (DNS).
-    Can be associated with persistent storage, ensuring data is not lost when a Pod is rescheduled.
+### Key Characteristics of StatefulSets:
+- **Stable Pod Names**: Pods are created in order and have predictable names like `<statefulset-name>-<ordinal>`.
+- **Ordered Deployment and Scaling**: Pods are created, updated, and deleted sequentially.
+- **Persistent Storage**: Each Pod can have its own PersistentVolumeClaim (PVC) for storage.
 
-Key Characteristics of StatefulSets
+### Use Cases:
+- Databases (e.g., MySQL, MongoDB, Cassandra).
+- Distributed systems (e.g., Kafka, Zookeeper).
+- Stateful applications that need consistent DNS names or persistent data.
 
-    Stable Pod Names: Pods are created in order and have predictable names like <statefulset-name>-<ordinal>.
-    Ordered Deployment and Scaling: Pods are created, updated, and deleted sequentially.
-    Persistent Storage: Each Pod can have its own PersistentVolumeClaim (PVC) for storage.
-    Use Cases:
-        Databases (e.g., MySQL, MongoDB, Cassandra).
-        Distributed systems (e.g., Kafka, Zookeeper).
-        Stateful applications that need consistent DNS names or persistent data.
+### List Staful Sets:
 
-StatefulSet Example
-
-Here’s a simple example of a StatefulSet deploying an NGINX server, where each Pod has its own identity and persistent volume:
-
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: nginx-statefulset
-spec:
-  serviceName: nginx-service
-  replicas: 3
-  selector:
-    matchLabels:
-      app: nginx
-  template:
-    metadata:
-      labels:
-        app: nginx
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:latest
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: nginx-storage
-          mountPath: /usr/share/nginx/html
-  volumeClaimTemplates:
-  - metadata:
-      name: nginx-storage
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 1Gi
-
-Explanation of the YAML
-Metadata
-
-    name: The name of the StatefulSet.
-
-Service Name
-
-    serviceName: Defines the headless service used to manage Pod DNS entries (e.g., nginx-statefulset-0, nginx-statefulset-1).
-
-Replicas
-
-    replicas: Specifies the number of Pods to run in the StatefulSet.
-
-Pod Template
-
-    template: Specifies the Pod definition:
-        containers: Defines the container(s) to run in each Pod.
-        volumeMounts: Mounts the PersistentVolumeClaim to a specific path.
-
-Persistent Volumes
-
-    volumeClaimTemplates: Template to dynamically provision persistent volumes for each Pod:
-        accessModes: Specifies how the volume can be accessed (ReadWriteOnce allows only one node to mount it at a time).
-        storage: Specifies the size of the volume (e.g., 1Gi).
-
-Deploying the StatefulSet
-
-    Save the YAML file as nginx-statefulset.yaml.
-
-    Apply it using kubectl:
-
-kubectl apply -f nginx-statefulset.yaml
-
-Verify the StatefulSet and Pods:
-
+```bash
 kubectl get statefulsets
-kubectl get pods
-
-The Pods will be named sequentially, like nginx-statefulset-0, nginx-statefulset-1, and nginx-statefulset-2.
-
-Check the Persistent Volume Claims:
-
-kubectl get pvc
-
-Each Pod will have its own PVC, e.g., nginx-storage-nginx-statefulset-0.
+```
 

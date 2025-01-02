@@ -12,5 +12,5 @@ spec:
     spec:
       containers:
       - name: students-database-migrator
-        image: students-db-migrator:v1.3
+        image: host.minikube.internal:5000/students-db-migrator:v1.3
       restartPolicy: OnFailure

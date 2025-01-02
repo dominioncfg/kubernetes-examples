@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{1A2BAE51
 		Infra\database.yaml = Infra\database.yaml
 		Infra\frontend.yaml = Infra\frontend.yaml
 		Infra\ingress-routes.yaml = Infra\ingress-routes.yaml
+		Infra\ngnix-controller.yaml = Infra\ngnix-controller.yaml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D050E969-3BAB-43F9-A4E9-DA798A0FCF43}"
@@ -22,6 +23,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KubernetesExample.DbMigratorRunner", "KubernetesExample.DbMigratorRunner\KubernetesExample.DbMigratorRunner.csproj", "{B6AF6B13-6976-4729-8C0F-2AD5C9BEE647}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KubernetesExample.SharedDataStorage", "KubernetesExample.SharedDataStorage\KubernetesExample.SharedDataStorage.csproj", "{5BF6B731-3F6B-433D-9965-D10432F218D0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Local", "Local", "{F804CA41-32B8-419C-8153-016BE8BA08F5}"
+	ProjectSection(SolutionItems) = preProject
+		Infra\Local\auth-secrets.yaml = Infra\Local\auth-secrets.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +50,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F804CA41-32B8-419C-8153-016BE8BA08F5} = {1A2BAE51-1CA9-4C0E-8CD4-DCA756DD0323}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {32159837-F698-48BE-A783-6E3D1940B61F}

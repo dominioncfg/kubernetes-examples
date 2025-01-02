@@ -18,6 +18,55 @@ The deployment process leverages Kubernetes features such as pods, services, and
 
 The guide is tested with minikube in mind. 
 
+---
+## Create the Registry
+
+### Run a local registry
+```bash
+docker-compose --file Infra/Local/docker-compose.yml up -d
+```
+
+### Login our docker host with the container to be able to push images
+```bash
+docker login -u jc -p Patata@1 localhost:5000   
+```
+
+### Setup a secret in kubernetes to be able to pull from the container
+```bash
+kubectl apply -f Infra/Local/auth-secrets.yaml
+```
+
+### Use the secret when pulling images automatically by changing the Service Account
+```bash
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "local-docker-registry"}]}'
+```
+
+---
+
+## Add Insecure Registry to Minikube
+
+### Stop minikube in case is running
+```bash
+minikube stop
+```
+
+### Configure the local registry as insecure
+```bash
+minikube config set insecure-registry "host.docker.internal:5000"
+```
+
+### Start minikube
+```bash
+minikube start
+```
+
+### Check if contianer is accessible
+
+```bash
+minikube ssh -- curl -u jc:Patata@1 http://host.docker.internal:5000/v2/_catalog
+```
+
+---
 ## Deploy the Database
 
 ### Apply Database Deployment
@@ -29,12 +78,13 @@ kubectl apply -f Infra/database.yaml
 
 ### Build Database Migrator Image Image
 ```bash
-docker build -t students-db-migrator:v1.3 -f KubernetesExample.DbMigratorRunner/Dockerfile ..
+docker build -t localhost:5000/students-db-migrator:v1.3 -f KubernetesExample.DbMigratorRunner/Dockerfile .
 ```
 
-### Load Database Migrator Image to Minikube Cluster
+
+### Push The Image to the local repository
 ```bash
-minikube image load students-db-migrator:v1.3
+docker push localhost:5000/students-db-migrator:v1.3
 ```
 
 ### Deploy Migrations Job
@@ -42,16 +92,18 @@ minikube image load students-db-migrator:v1.3
 kubectl apply -f Infra/database-migrator.yaml
 ```
 
+---
+
 ## Deploy the Backend
 
 ### Build Backend Image
 ```bash
-docker build -t students-api:v1.3 -f KubernetesExample/Dockerfile .
+docker build -t localhost:5000/students-api:v1.3 -f KubernetesExample/Dockerfile .
 ```
 
-### Load Backend Image to Minikube Cluster
+###  Push The Image to the local repository
 ```bash
-minikube image load students-api:v1.3
+docker push localhost:5000/students-api:v1.3
 ```
 
 ### Apply Backend Deployment
@@ -59,16 +111,18 @@ minikube image load students-api:v1.3
 kubectl apply -f Infra/backend.yaml
 ```
 
+---
+
 ## Deploy the Frontend
 
 ### Build Frontend Image
 ```bash
-docker build -t frontend-server:v1.3 -f Infra/Html/Dockerfile Infra/html
+docker build -t localhost:5000/frontend-server:v1.3 -f Infra/Html/Dockerfile Infra/html
 ```
 
-### Load Frontend Image into the Minikube Cluster
+### Push The Image to the local repository
 ```bash
-minikube image load frontend-server:v1.3
+docker push localhost:5000/frontend-server:v1.3
 ```
 
 ### Apply Frontend Deployment
@@ -81,8 +135,9 @@ kubectl apply -f Infra/frontend.yaml
 ## Deploy Ingress Routes
 
 ### Setup and Nginx Ingress Controller
-Use the script located in `Examples/13.Ingress/02.Controller.yaml`. Only the Controller is needed
-
+```bash
+kubectl apply -f Infra/ngnix-controller.yaml
+```
 ### Deploy the Routes
 ```bash
 kubectl apply -f Infra/ingress-routes.yaml
@@ -105,6 +160,8 @@ kubectl delete -f Infra/frontend.yaml
 kubectl delete -f Infra/backend.yaml
 kubectl delete -f Infra/database-migrator.yaml
 kubectl delete -f Infra/database.yaml
+kubectl delete -f Infra/Local/auth-secrets.yaml
+kubectl delete -f Infra/ngnix-controller.yaml
 ```
 
 ---
@@ -126,7 +183,27 @@ GO
 
 ---
 
+### Changing the local registry password
+```bash
+# Create a local file with the new 
+docker run --rm httpd:2.4 htpasswd -Bbn <UserName> <Password> > htpasswd_file
+# Create a docker config with with the new Pasword
+#Then Encode in base64 the file
+cat docker-config.json | base64 -w 0
+#Copy the result in the in auth-secrets.yaml
+```
+
+---
+### Run a curl container
+
+```bash
+docker run --rm curlimages/curl:8.11.1 sleep 3600
+```
+
+---
+
 ### For Local Development
+```
 
 ### Run SQL Server Image
 ```bash
@@ -136,6 +213,11 @@ docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=PataDeCabra@2020" -p 1433:14
 ### Test Locally Docker Image
 ```bash
 docker run --network host -d students-api:v1.3
+```
+
+### Add Migration
+```bash
+dotnet ef migrations add InitialMigration --project KubernetesExample.SharedDataStorage  --startup-project KubernetesExample.DbMigratorRunner -c AppDbContext -o Migrations
 ```
 
 ### Add Migration

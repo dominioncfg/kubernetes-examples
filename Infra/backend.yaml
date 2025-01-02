@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: backend-api
-        image: students-api:v1.3
+        image: host.minikube.internal:5000/students-api:v1.3
         imagePullPolicy: IfNotPresent
         resources:
           limits:

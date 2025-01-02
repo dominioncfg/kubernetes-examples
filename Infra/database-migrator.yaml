@@ -21,6 +21,7 @@ spec:
     spec:
       containers:
       - name: students-database-migrator
+        imagePullPolicy: Always
         image: host.minikube.internal:5000/students-db-migrator:v1.3
         resources:
           limits:

@@ -63,7 +63,8 @@ minikube start
 ### Check if contianer is accessible
 
 ```bash
-minikube ssh -- curl -u jc:Patata@1 http://host.docker.internal:5000/v2/_catalog
+minikube ssh 
+curl -u jc:Patata@1 http://host.docker.internal:5000/v2/_catalog
 ```
 
 ---

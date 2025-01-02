@@ -1,3 +1,4 @@
+# --------------Secret Env Variable with the Connection String
 apiVersion: v1
 kind: Secret
 metadata:
@@ -6,8 +7,35 @@ type: Opaque
 stringData:
   sqlServerConnectionString: Server=data-base-service;Database=StudentsDb_Tests;User Id=sa;Password=PataDeCabra@2020;TrustServerCertificate=True;
 
----
 
+# --------------Role and Role Binding to allow the Init Container to see if database is already migrate
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: job-reader
+  namespace: default 
+rules:
+  - apiGroups: ["batch"] 
+    resources: ["jobs"] 
+    verbs: ["get", "list"] 
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: job-reader-binding
+  namespace: default 
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: default 
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: job-reader 
+
+---
+# --------------Deployement and Service Itself
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,10 +57,17 @@ spec:
         subtype: api
         service-name: students-api
     spec:
+      initContainers:
+      - name: "students-api-init"
+        image: "groundnuty/k8s-wait-for:1.3"
+        imagePullPolicy: Always
+        args: 
+        - "job"
+        - "students-database-migrator-job"
       containers:
       - name: backend-api
         image: host.minikube.internal:5000/students-api:v1.3
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           limits:
              cpu: 220m

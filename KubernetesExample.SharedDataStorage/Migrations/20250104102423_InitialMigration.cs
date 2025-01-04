@@ -11,13 +11,17 @@ namespace KubernetesExample.SharedDataStorage.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "std");
+
             migrationBuilder.CreateTable(
                 name: "Students",
+                schema: "std",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Age = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Age = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -25,6 +29,7 @@ namespace KubernetesExample.SharedDataStorage.Migrations
                 });
 
             migrationBuilder.InsertData(
+                schema: "std",
                 table: "Students",
                 columns: new[] { "Id", "Age", "Name" },
                 values: new object[] { new Guid("b8881257-533d-4cee-a037-bfd1cedb5fa4"), 18, "Perico" });
@@ -34,7 +39,8 @@ namespace KubernetesExample.SharedDataStorage.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Students");
+                name: "Students",
+                schema: "std");
         }
     }
 }

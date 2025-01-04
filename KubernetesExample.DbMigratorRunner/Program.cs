@@ -15,8 +15,15 @@ static IHost CreateHost(string[] args)
         .UseConsoleLifetime()
         .ConfigureServices((context, services) =>
         {
-            var connectionString = context.Configuration.GetConnectionString("SqlServer");
-            services.AddDbContext<AppDbContext>(o => o.UseSqlServer(connectionString));
+            var connectionString = context.Configuration.GetConnectionString("PgSql");
+
+
+            services.AddDbContextPool<AppDbContext>(opt =>
+                 opt.UseNpgsql(connectionString!,
+                    o => o
+                        .SetPostgresVersion(15, 0)
+                 )
+            );
         })
         .ConfigureAppConfiguration((context, builder) =>
         {

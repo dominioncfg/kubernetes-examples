@@ -5,7 +5,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<AppDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
+var connectionString = builder.Configuration.GetConnectionString("PgSql");
+
+builder.Services.AddDbContextPool<AppDbContext>(opt =>
+                opt.UseNpgsql(connectionString!,
+                   o => o
+                       .SetPostgresVersion(15, 0)
+                )
+           );
 builder.Services.AddControllers();
 builder.AddCustomHealthChecks();
 

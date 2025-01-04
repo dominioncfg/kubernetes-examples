@@ -4,8 +4,7 @@ metadata:
   name: migration-job-sql-secret
 type: Opaque
 stringData:
-  sqlServerConnectionString: Server=data-base-service;Database=StudentsDb_Tests;User Id=sa;Password=PataDeCabra@2020;TrustServerCertificate=True;
-
+  pgSqlConnectionString: Host=data-base-service;Port=5432;Database=postgres;User ID=postgres;Password=PataDeCabra@2020;Pooling=true;Minimum Pool Size=0;Maximum Pool Size=100;Connection Lifetime=0;
 ---
 apiVersion: batch/v1
 kind: Job
@@ -22,7 +21,7 @@ spec:
       containers:
       - name: students-database-migrator
         imagePullPolicy: Always
-        image: host.minikube.internal:5000/students-db-migrator:v1.3
+        image: host.minikube.internal:5000/students-db-migrator:v1.4
         resources:
           limits:
              cpu: 220m
@@ -31,9 +30,9 @@ spec:
             cpu: 200m
             memory: 256Mi
         env:
-         - name: ConnectionStrings__SqlServer
+         - name: ConnectionStrings__PgSql
            valueFrom:
               secretKeyRef:
                 name: migration-job-sql-secret
-                key: sqlServerConnectionString
+                key: pgSqlConnectionString
       restartPolicy: OnFailure

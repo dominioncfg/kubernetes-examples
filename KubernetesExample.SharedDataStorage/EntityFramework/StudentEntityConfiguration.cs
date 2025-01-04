@@ -17,5 +17,7 @@ public class StudentEntityConfiguration : IEntityTypeConfiguration<Student>
             Name = "Perico",
             Age = 18,
         });
+
+        builder.ToTable("Students", "std");
     }
 }

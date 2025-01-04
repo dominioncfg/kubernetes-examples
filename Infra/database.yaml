@@ -18,8 +18,8 @@ spec:
         dbName: students-db
     spec:
       containers:
-      - name: sql-server
-        image: mcr.microsoft.com/mssql/server:2022-latest
+      - name: pg-sql-server
+        image: postgres:15.0
         resources:
           limits:
              cpu: 550m
@@ -28,11 +28,9 @@ spec:
             cpu: 500m
             memory: 1Gi            
         ports:
-        - containerPort: 1433
+        - containerPort: 5432
         env:
-        - name: ACCEPT_EULA
-          value: "Y"
-        - name: MSSQL_SA_PASSWORD
+        - name: POSTGRES_PASSWORD
           value: "PataDeCabra@2020"
 
 
@@ -48,5 +46,5 @@ spec:
     dbName: students-db
   ports:
     - protocol: TCP
-      port: 1433
-      targetPort: 1433
+      port: 5432
+      targetPort: 5432

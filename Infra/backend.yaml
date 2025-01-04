@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: migration-job-sql-secret
+  name: api-job-sql-secret
 type: Opaque
 stringData:
-  sqlServerConnectionString: Server=data-base-service;Database=StudentsDb_Tests;User Id=sa;Password=PataDeCabra@2020;TrustServerCertificate=True;
+   pgSqlConnectionString: Host=data-base-service;Port=5432;Database=postgres;User ID=postgres;Password=PataDeCabra@2020;Pooling=true;Minimum Pool Size=0;Maximum Pool Size=100;Connection Lifetime=0;
 
 
 # --------------Role and Role Binding to allow the Init Container to see if database is already migrate
@@ -66,7 +66,7 @@ spec:
         - "students-database-migrator-job"
       containers:
       - name: backend-api
-        image: host.minikube.internal:5000/students-api:v1.3
+        image: host.minikube.internal:5000/students-api:v1.4
         imagePullPolicy: Always
         resources:
           limits:
@@ -99,12 +99,11 @@ spec:
         env:
         - name: applicationUrl
           value: "http://localhost:8080"
-        - name: ConnectionStrings__SqlServer
+        - name: ConnectionStrings__PgSql
           valueFrom:
             secretKeyRef:
-               name: migration-job-sql-secret
-               key: sqlServerConnectionString
-
+               name: api-job-sql-secret
+               key: pgSqlConnectionString
 ---
 
 apiVersion: v1

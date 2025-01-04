@@ -4,7 +4,7 @@
 
 This guide provides a step-by-step walkthrough for deploying a full-stack application to a Kubernetes cluster. The application is composed of the following components:
 
-1. **SQL Server Database:** The persistent data storage solution.
+1. **PostgreSql Database:** The persistent data storage solution.
 2. **.NET Core Web API:** A backend service that handles business logic and interacts with the database.
 3. **Database Migration Job:** A utility for deploying and applying database schema migrations.
 4. **Nginx Frontend:** A web server hosting the client-facing interface.
@@ -79,13 +79,13 @@ kubectl apply -f Infra/database.yaml
 
 ### Build Database Migrator Image Image
 ```bash
-docker build -t localhost:5000/students-db-migrator:v1.3 -f KubernetesExample.DbMigratorRunner/Dockerfile .
+docker build -t localhost:5000/students-db-migrator:v1.4 -f KubernetesExample.DbMigratorRunner/Dockerfile .
 ```
 
 
 ### Push The Image to the local repository
 ```bash
-docker push localhost:5000/students-db-migrator:v1.3
+docker push localhost:5000/students-db-migrator:v1.4
 ```
 
 ### Deploy Migrations Job
@@ -99,12 +99,12 @@ kubectl apply -f Infra/database-migrator.yaml
 
 ### Build Backend Image
 ```bash
-docker build -t localhost:5000/students-api:v1.3 -f KubernetesExample/Dockerfile .
+docker build -t localhost:5000/students-api:v1.4 -f KubernetesExample/Dockerfile .
 ```
 
 ###  Push The Image to the local repository
 ```bash
-docker push localhost:5000/students-api:v1.3
+docker push localhost:5000/students-api:v1.4
 ```
 
 ### Apply Backend Deployment
@@ -118,12 +118,12 @@ kubectl apply -f Infra/backend.yaml
 
 ### Build Frontend Image
 ```bash
-docker build -t localhost:5000/frontend-server:v1.3 -f Infra/Html/Dockerfile Infra/html
+docker build -t localhost:5000/frontend-server:v1.4 -f Infra/Html/Dockerfile Infra/html
 ```
 
 ### Push The Image to the local repository
 ```bash
-docker push localhost:5000/frontend-server:v1.3
+docker push localhost:5000/frontend-server:v1.4
 ```
 
 ### Apply Frontend Deployment
@@ -168,7 +168,7 @@ kubectl delete -f Infra/ngnix-controller.yaml
 ---
 ## Other scripts
 
-### Run a Pod Inside the Cluster and Connect to the Database
+### Run a Pod Inside the Cluster and Connect to the Database (Deprecated)
 
 #### Run MSSQL Tools in the Cluster to Test the Database
 ```bash
@@ -206,9 +206,9 @@ docker run --rm curlimages/curl:8.11.1 sleep 3600
 ### For Local Development
 ```
 
-### Run SQL Server Image
+### Run Pg Server Image Locally
 ```bash
-docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=PataDeCabra@2020" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+docker run --name pg-sql -e POSTGRES_PASSWORD=PataDeCabra@2020 -p 5432:5432 -d postgres:15.0
 ```
 
 ### Test Locally Docker Image
@@ -221,7 +221,3 @@ docker run --network host -d students-api:v1.3
 dotnet ef migrations add InitialMigration --project KubernetesExample.SharedDataStorage  --startup-project KubernetesExample.DbMigratorRunner -c AppDbContext -o Migrations
 ```
 
-### Add Migration
-```bash
-dotnet ef migrations add InitialMigration --project KubernetesExample.SharedDataStorage  --startup-project KubernetesExample.DbMigratorRunner -c AppDbContext -o Migrations
-```

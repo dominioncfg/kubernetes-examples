@@ -13,7 +13,7 @@ public static class HealthCheckExtensions
         .Services
             .AddHealthChecks()
                 .AddCheck<DefaultHealthyCheck>("DefaultHealthyCheck", HealthStatus.Healthy, [DumbHealthCheckTag])
-                .AddSqlServer(builder.Configuration.GetConnectionString("SqlServer")!, tags: ["Smart"]);
+                .AddNpgSql(builder.Configuration.GetConnectionString("PgSql")!, tags: ["Smart"]);
 
         return builder;
     }

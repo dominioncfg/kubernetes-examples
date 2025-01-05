@@ -1,50 +1,92 @@
-apiVersion: apps/v1
-kind: Deployment
+#------------------------------------Database Password------------------------
+apiVersion: v1
+kind: Secret
 metadata:
-  name: data-base-deployment
+  name:  students-pg-secret
   labels:
-    app: students-service
-    type: db
+    app: students-api
+    type: data-base
+type: Opaque
+stringData:
+  POSTGRES_USER: studentApiAdmin
+  POSTGRES_PASSWORD: PataDeCabra@2020
+  POSTGRES_DB: studentsdb
+
+---
+
+
+#------------------------------------Statefult Set Of Database------------------------
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: students-pg-sset
 spec:
+  serviceName: "students-pg-svc"
   replicas: 1
   selector:
     matchLabels:
-      dbName: students-db
+        app: students-api
+        type: data-base
+        sub-type: infra-db
   template:
     metadata:
       labels:
-        app: students-service
-        type: db
-        dbName: students-db
+        app: students-api
+        type: data-base
+        sub-type: infra-db
     spec:
       containers:
-      - name: pg-sql-server
-        image: postgres:15.0
-        resources:
-          limits:
-             cpu: 550m
-             memory: 1100Mi
-          requests:
-            cpu: 500m
-            memory: 1Gi            
+      - name: pd-db
+        image: postgres:15 
         ports:
         - containerPort: 5432
+          name: postgres
         env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: students-pg-secret
+              key: POSTGRES_USER
         - name: POSTGRES_PASSWORD
-          value: "PataDeCabra@2020"
-
+          valueFrom:
+            secretKeyRef:
+              name: students-pg-secret
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: students-pg-secret
+              key: POSTGRES_DB
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+          subPath: postgres
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
 
 ---
+
+#------------------------------------Headless Service------------------------
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: data-base-service
+  name: students-pg-svc
+  labels:
+    app: students-api
+    type: data-base
 spec:
-  type: ClusterIP
-  selector:
-    dbName: students-db
   ports:
-    - protocol: TCP
-      port: 5432
-      targetPort: 5432
+  - port: 5432
+    name: postgres
+  clusterIP: None
+  selector:
+    app: students-api
+    type: data-base
+    sub-type: infra-db

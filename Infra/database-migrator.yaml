@@ -4,7 +4,7 @@ metadata:
   name: migration-job-sql-secret
 type: Opaque
 stringData:
-  pgSqlConnectionString: Host=data-base-service;Port=5432;Database=postgres;User ID=postgres;Password=PataDeCabra@2020;Pooling=true;Minimum Pool Size=0;Maximum Pool Size=100;Connection Lifetime=0;
+   pgSqlConnectionString: Host=students-pg-sset-0.students-pg-svc;Port=5432;Database=studentsdb;Username=studentApiAdmin;Password=PataDeCabra@2020;Pooling=true;Minimum Pool Size=0;Maximum Pool Size=100;Connection Lifetime=0;
 ---
 apiVersion: batch/v1
 kind: Job

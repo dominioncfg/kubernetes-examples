@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{1A2BAE51
 		Infra\backend.yaml = Infra\backend.yaml
 		Infra\database-migrator.yaml = Infra\database-migrator.yaml
 		Infra\database.yaml = Infra\database.yaml
+		Infra\debug-container.yaml = Infra\debug-container.yaml
 		Infra\frontend.yaml = Infra\frontend.yaml
 		Infra\ingress-routes.yaml = Infra\ingress-routes.yaml
 		Infra\ngnix-controller.yaml = Infra\ngnix-controller.yaml

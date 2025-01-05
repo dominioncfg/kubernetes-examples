@@ -155,6 +155,8 @@ minikube service ingress-nginx-controller --url  -n ingress-nginx
 The App should be listening in `http://127.0.0.1:XXXXX/app`
 
 ## Clean up all resources after you finish
+
+### Delete all the deployed resources
 ```bash
 kubectl delete -f Infra/ingress-routes.yaml
 kubectl delete -f Infra/frontend.yaml
@@ -163,23 +165,40 @@ kubectl delete -f Infra/database-migrator.yaml
 kubectl delete -f Infra/database.yaml
 kubectl delete -f Infra/Local/auth-secrets.yaml
 kubectl delete -f Infra/ngnix-controller.yaml
+docker-compose --file Infra/Local/docker-compose.yml down
 ```
+
+### Delete the Database Persistent Volume and its Claim
+```bash
+kubectl delete pvc postgres-data-students-pg-sset-0
+```
+
 
 ---
 ## Other scripts
 
-### Run a Pod Inside the Cluster and Connect to the Database (Deprecated)
+### Connect to the datbase
 
-#### Run MSSQL Tools in the Cluster to Test the Database
+#### Deploy the included debugging pods
+There are two pods included one for ssh and another one with a PlSqlClient
 ```bash
-kubectl run -i --tty --rm debug --image=mcr.microsoft.com/mssql-tools:latest --restart=Never
+kubectl apply -f Infra/debug-container.yaml
+```
+
+#### Connect to the SQL Client Pod
+```bash
+kubectl exec -it psql-client -- sh 
 ```
 
 #### Connect to the Database
+```bash
+psql -h students-pg-sset-0.students-pg-svc -U studentApiAdmin -d studentsdb
+```
+
+#### Run a Query
 ```sql
-sqlcmd -S data-base-service -U sa -P PataDeCabra@2020
-SELECT name, database_id, create_date FROM sys.databases;
-GO
+#Get tables in the std schema
+\dt std.*
 ```
 
 ---

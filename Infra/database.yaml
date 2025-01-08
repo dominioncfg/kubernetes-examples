@@ -1,3 +1,5 @@
+# Use this if you want to deploy only one Database without replica. Config maps in backend and migrator needs to be updated
+
 #------------------------------------Database Password------------------------
 apiVersion: v1
 kind: Secret

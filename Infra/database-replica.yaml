@@ -1,0 +1,206 @@
+#------------------------------------pg_hba.conf------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: students-pg-replica-hba-config-map
+data:
+  pg_hba.conf : |
+    # TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+    # "local" is for Unix domain socket connections only
+    local   all             all                                     trust
+    # IPv4 local connections:
+    host    all             all             127.0.0.1/32            trust
+    # IPv6 local connections:
+    host    all             all             ::1/128                 trust
+    # Allow replication connections from localhost, by a user with the
+    # replication privilege.
+    local   replication     all                                     trust
+    host    replication     all             127.0.0.1/32            trust
+    host    replication     all             ::1/128                 trust
+
+    host all all all scram-sha-256
+
+
+#------------------------------------pg_ident.conf------------------------
+--- 
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: students-pg-replica-ident-config-map
+data:
+  pg_ident.conf : |
+    #Empty File
+
+#------------------------------------postgresql.conf------------------------
+--- 
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: students-pg-replica-pgconf-config-map
+data:
+  postgresql.conf : |
+    # -----------------------------
+    # PostgreSQL configuration file
+    # -----------------------------
+    #
+
+    data_directory = '/data'
+    hba_file = '/config/pg_hba.conf'
+    ident_file = '/config/pg_ident.conf'
+
+    port = 5432
+    listen_addresses = '*'
+    max_connections = 100
+    shared_buffers = 128MB
+    dynamic_shared_memory_type = posix
+    max_wal_size = 1GB
+    min_wal_size = 80MB
+    log_timezone = 'Etc/UTC'
+    datestyle = 'iso, mdy'
+    timezone = 'Etc/UTC'
+
+    #locale settings
+    lc_messages = 'en_US.utf8'			# locale for system error message
+    lc_monetary = 'en_US.utf8'			# locale for monetary formatting
+    lc_numeric = 'en_US.utf8'			# locale for number formatting
+    lc_time = 'en_US.utf8'				# locale for time formatting
+
+    default_text_search_config = 'pg_catalog.english'
+
+---
+
+#------------------------------------Statefult Set Database------------------------
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: students-pg-replica-sset
+spec:
+  serviceName: "students-pg-master-svc"
+  replicas: 1
+  selector:
+    matchLabels:
+        app: students-api
+        type: data-base-master-replica
+        sub-type: replica-db
+  template:
+    metadata:
+      labels:
+        app: students-api
+        type: data-base-master-replica
+        sub-type: replica-db
+    spec:
+      initContainers:
+        - name: setup-replica-data-directory
+          image: postgres:15.0
+          
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: students-pg-creds-secret
+                  key: POSTGRES_PASSWORD
+
+          command:
+          - sh
+          - -c
+          - |
+            if [ -z "$(ls -A /data)" ]; then
+                echo "Running pg_basebackup to catch up replication server2...";
+                pg_basebackup -h students-pg-master-sset-0.students-pg-master-svc -p 5432 -U replicationuser -D /data/ -Fp -Xs -R
+                chown -R postgres:postgres $PGDATA;
+            else
+                echo "Skipping pg_basebackup because directory is not empty"; 
+            fi
+          volumeMounts:
+            - mountPath: /data
+              name: postgres-replica-data
+      containers:
+      - name: pd-db
+        image: postgres:15
+        command: [ "docker-entrypoint.sh", "-c", "config_file=/config/postgresql.conf" ]
+          
+        ports:
+        - containerPort: 5432
+          name: postgres
+        readinessProbe:
+          tcpSocket:
+            port: 5432
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - $POSTGRES_USER
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+        startupProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - pg_isready -U $POSTGRES_USER
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          failureThreshold: 30
+        env:
+        - name: PGDATA
+          value: /data
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: students-pg-creds-secret
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: students-pg-creds-secret
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: students-pg-creds-secret
+              key: POSTGRES_DB
+        volumeMounts:
+        - name: postgres-replica-data
+          mountPath: /data
+        - name: archive-replica-data
+          mountPath: /mnt/server/archive 
+        - name: pg-config-volume
+          mountPath: /config
+       
+
+      volumes:
+        - name: pg-config-volume
+          projected:
+            sources:
+            - configMap:
+                name: students-pg-replica-hba-config-map
+            - configMap:
+                name: students-pg-replica-ident-config-map
+            - configMap:
+                name: students-pg-replica-pgconf-config-map
+           
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-replica-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi
+  - metadata:
+      name: archive-replica-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi
+
+---

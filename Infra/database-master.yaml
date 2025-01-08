@@ -1,0 +1,236 @@
+#------------------------------------Database Credentials------------------------
+apiVersion: v1
+kind: Secret
+metadata:
+  name:  students-pg-creds-secret
+  labels:
+    app: students-api
+    type: data-base-master-replica
+type: Opaque
+stringData:
+  POSTGRES_USER: studentApiAdmin
+  POSTGRES_PASSWORD: PataDeCabra@2020
+  POSTGRES_DB: studentsdb
+
+---
+
+#------------------------------------pg_hba.conf------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: students-pg-master-hba-config-map
+data:
+  pg_hba.conf : |
+    # TYPE  DATABASE        USER            ADDRESS                 METHOD
+    #This is the replication User:
+    host     replication     replicationuser         0.0.0.0/0        md5
+
+    # "local" is for Unix domain socket connections only
+    local   all             all                                     trust
+    # IPv4 local connections:
+    host    all             all             127.0.0.1/32            trust
+    # IPv6 local connections:
+    host    all             all             ::1/128                 trust
+    # Allow replication connections from localhost, by a user with the
+    # replication privilege.
+    local   replication     all                                     trust
+    host    replication     all             127.0.0.1/32            trust
+    host    replication     all             ::1/128                 trust
+
+    host all all all scram-sha-256
+
+#------------------------------------pg_ident.conf------------------------
+--- 
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: students-pg-master-ident-config-map
+data:
+  pg_ident.conf : |
+    #Empty File
+
+#------------------------------------postgresql.conf------------------------
+--- 
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: students-pg-master-pgconf-config-map
+data:
+  postgresql.conf : |
+    # -----------------------------
+    # PostgreSQL configuration file
+    # -----------------------------
+    #
+
+    data_directory = '/data'
+    hba_file = '/config/pg_hba.conf'
+    ident_file = '/config/pg_ident.conf'
+
+    port = 5432
+    listen_addresses = '*'
+    max_connections = 100
+    shared_buffers = 128MB
+    dynamic_shared_memory_type = posix
+    max_wal_size = 1GB
+    min_wal_size = 80MB
+    log_timezone = 'Etc/UTC'
+    datestyle = 'iso, mdy'
+    timezone = 'Etc/UTC'
+
+    #locale settings
+    lc_messages = 'en_US.utf8'			# locale for system error message
+    lc_monetary = 'en_US.utf8'			# locale for monetary formatting
+    lc_numeric = 'en_US.utf8'			# locale for number formatting
+    lc_time = 'en_US.utf8'				# locale for time formatting
+
+    default_text_search_config = 'pg_catalog.english'
+
+    #replication
+    wal_level = replica
+    archive_mode = on
+    archive_command = 'test ! -f /mnt/server/archive/%f && cp %p /mnt/server/archive/%f'# Unix
+    max_wal_senders = 3  
+
+---
+#------------------------------------Startup Sql.conf------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: students-pg-master-startup-script-config-map
+data:
+  script.sql: |
+   CREATE ROLE replicationuser WITH LOGIN PASSWORD 'PataDeCabra@2020' REPLICATION;
+
+
+#------------------------------------Statefult Set Database------------------------
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: students-pg-master-sset
+spec:
+  serviceName: "students-pg-master-svc"
+  replicas: 1
+  selector:
+    matchLabels:
+        app: students-api
+        type: data-base-master-replica
+        sub-type: infra-db
+  template:
+    metadata:
+      labels:
+        app: students-api
+        type: data-base-master-replica
+        sub-type: infra-db
+    spec:
+      containers:
+      - name: pd-db
+        image: postgres:15
+        command: [ "docker-entrypoint.sh", "-c", "config_file=/config/postgresql.conf" ]
+          
+        ports:
+        - containerPort: 5432
+          name: postgres
+        readinessProbe:
+          tcpSocket:
+            port: 5432
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - $POSTGRES_USER
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+        startupProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - pg_isready -U $POSTGRES_USER
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          failureThreshold: 30
+        env:
+        - name: PGDATA
+          value: /data
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: students-pg-creds-secret
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: students-pg-creds-secret
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: students-pg-creds-secret
+              key: POSTGRES_DB
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /data
+        - name: archive-data
+          mountPath: /mnt/server/archive 
+        - name: pg-config-volume
+          mountPath: /config
+        - name: startup-script-volume
+          mountPath: /docker-entrypoint-initdb.d/script.sql
+          subPath: script.sql
+
+      volumes:
+        - name: startup-script-volume
+          configMap:
+            name: students-pg-master-startup-script-config-map
+        - name: pg-config-volume
+          projected:
+            sources:
+            - configMap:
+                name: students-pg-master-hba-config-map
+            - configMap:
+                name: students-pg-master-ident-config-map
+            - configMap:
+                name: students-pg-master-pgconf-config-map
+           
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi
+  - metadata:
+      name: archive-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi
+
+---
+
+#------------------------------------Headless Service------------------------
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: students-pg-master-svc
+  labels:
+    app: students-api
+    type: data-base-master-replica
+spec:
+  ports:
+  - port: 5432
+    name: postgres
+  clusterIP: None
+  selector:
+    app: students-api
+    type: data-base-master-replica

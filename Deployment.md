@@ -4,7 +4,7 @@
 
 This guide provides a step-by-step walkthrough for deploying a full-stack application to a Kubernetes cluster. The application is composed of the following components:
 
-1. **PostgreSql Database:** The persistent data storage solution.
+1. **PostgreSql Database:** The persistent data storage solution. Using a Master Replica DB Cluster
 2. **.NET Core Web API:** A backend service that handles business logic and interacts with the database.
 3. **Database Migration Job:** A utility for deploying and applying database schema migrations.
 4. **Nginx Frontend:** A web server hosting the client-facing interface.
@@ -69,10 +69,17 @@ curl -u jc:Patata@1 http://host.docker.internal:5000/v2/_catalog
 
 ---
 ## Deploy the Database
+Database consist in a Master-Replica of PostgreSql.
 
-### Apply Database Deployment
+### Apply Master Database Stateful Set
 ```bash
-kubectl apply -f Infra/database.yaml
+kubectl apply -f Infra/database-master.yaml 
+
+```
+
+### Apply Replica Database Stateful Set
+```bash
+kubectl apply -f Infra/database-replica.yaml
 ```
 
 ## Apply Database Migrations
@@ -162,7 +169,8 @@ kubectl delete -f Infra/ingress-routes.yaml
 kubectl delete -f Infra/frontend.yaml
 kubectl delete -f Infra/backend.yaml
 kubectl delete -f Infra/database-migrator.yaml
-kubectl delete -f Infra/database.yaml
+kubectl delete -f Infra/database-replica.yaml 
+kubectl delete -f Infra/database-master.yaml 
 kubectl delete -f Infra/Local/auth-secrets.yaml
 kubectl delete -f Infra/ngnix-controller.yaml
 docker-compose --file Infra/Local/docker-compose.yml down
@@ -170,9 +178,18 @@ docker-compose --file Infra/Local/docker-compose.yml down
 
 ### Delete the Database Persistent Volume and its Claim
 ```bash
-kubectl delete pvc postgres-data-students-pg-sset-0
+kubectl delete pvc postgres-data-students-pg-master-sset-0
+kubectl delete pvc archive-data-students-pg-master-sset-0
+kubectl delete pvc postgres-replica-data-students-pg-replica-sset-0
+kubectl delete pvc archive-replica-data-students-pg-replica-sset-0
 ```
 
+### Delete PV if they were nore removed properly
+```bash
+kubectl get pv
+#If any PV exist do: 
+kubectl delete pv <Name>
+```
 
 ---
 ## Other scripts

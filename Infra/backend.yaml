@@ -5,7 +5,7 @@ metadata:
   name: api-job-sql-secret
 type: Opaque
 stringData:
-   pgSqlConnectionString: Host=students-pg-sset-0.students-pg-svc;Port=5432;Database=studentsdb;Username=studentApiAdmin;Password=PataDeCabra@2020;Pooling=true;Minimum Pool Size=0;Maximum Pool Size=100;Connection Lifetime=0;
+   pgSqlConnectionString: Host=students-pg-master-sset-0.students-pg-master-svc;Port=5432;Database=studentsdb;Username=studentApiAdmin;Password=PataDeCabra@2020;Pooling=true;Minimum Pool Size=0;Maximum Pool Size=100;Connection Lifetime=0;
 
 
 # --------------Role and Role Binding to allow the Init Container to see if database is already migrate

@@ -17,7 +17,7 @@ metadata:
     type: frontend
     subtype: http-server
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       service-name: students-frontend-server
@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
       - name: frontend-server
-        image: host.minikube.internal:5000/frontend-server:v1.4
+        image: 2025kubernetesimagetest.azurecr.io/frontend-server:v1.4
         resources:
           limits:
              cpu: 220m

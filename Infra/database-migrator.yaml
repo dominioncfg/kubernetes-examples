@@ -21,7 +21,7 @@ spec:
       containers:
       - name: students-database-migrator
         imagePullPolicy: Always
-        image: host.minikube.internal:5000/students-db-migrator:v1.4
+        image: 2025kubernetesimagetest.azurecr.io/students-db-migrator:v1.4
         resources:
           limits:
              cpu: 220m

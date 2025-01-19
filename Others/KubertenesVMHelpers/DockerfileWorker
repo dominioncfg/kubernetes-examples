@@ -1,0 +1,20 @@
+# Use a lightweight Linux base image
+FROM debian:bullseye
+
+# Set the working directory
+WORKDIR /root
+
+# Copy the SSH key into the image
+# Replace 'master-node_key.pem' with the actual file name
+COPY vm-worker-node_key.pem /root/vm-worker-node_key.pem
+
+# Set the correct permissions for the key
+RUN chmod 600 /root/vm-worker-node_key.pem
+
+# Install the SSH client
+RUN apt-get update && \
+    apt-get install -y openssh-client && \
+    apt-get clean
+
+# Set a default command to keep the container running
+CMD ["bash"]

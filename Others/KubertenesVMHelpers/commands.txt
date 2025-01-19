@@ -1,0 +1,48 @@
+----------------------------  SSH Into the Machine -------------
+
+docker run -it --name my-ssh-container ssh-client-container
+
+ssh -i /root/master-node_key.pem adminUser@68.221.198.87
+
+-------------------------Create User-----------------------
+
+
+openssl genrsa -out vmuser.key 2048
+openssl req -new -key vmuser.key -out vmuser.csr -subj "/CN=vmuser/O=myAdmin"
+sudo openssl x509 -req -in vmuser.csr -CA  /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out vmuser.crt -days 365
+
+----------------------Copy files Via SSH 
+scp  -i /root/master-node_key.pem -r adminUser@68.221.198.87:/home/adminUser/MyCert /root/MyCert
+
+scp  -i /root/master-node_key.pem -r adminUser@68.221.198.87:/etc/kubernetes/pki/ca.crt /root/MyCert
+/etc/kubernetes/pki/ca.crt
+
+
+-------------Configure Local Machine---------------
+kubectl config set-cluster vmuser-cluster --server=https://68.221.198.87:6443 --insecure-skip-tls-verify=true
+kubectl config set-credentials vmuser --client-certificate="C:\\myKubectlUsers\\vmuser.crt" --client-key="C:\\myKubectlUsers\\vmuser.key"
+
+kubectl config set-context my-vm-context --cluster=vmuser-cluster --user=vmuser
+
+
+kubectl config set-cluster my-cluster \
+  --server=https://68.221.198.87:6443 \
+  --insecure-skip-tls-verify=true
+kubectl config use-context my-vm-context
+
+
+--ServciceACcount
+
+kubectl patch serviceaccount default -p '{"imagePullSecrets": [{"name": "local-docker-registry"}]}'
+
+
+
+--------- Worker NOde----------------
+
+docker build -t ssh-client-worker -f DockerfileWorker .
+
+docker run -it --name my-ssh-worker-container ssh-client-worker
+
+ssh -i /root/vm-worker-node_key.pem azureuser@68.221.130.71
+
+

@@ -1,0 +1,63 @@
+# Run before a: chown -R 999:999 ./postgres-1/config
+version: '3.8'
+services:
+  master:
+    container_name: pg-master
+    image: "postgres:15.0"
+    command:
+      - "postgres"
+      - "-c"
+      - "config_file=/config/postgresql.conf"
+    ports:
+     - 5000:5432
+    environment:
+      POSTGRES_USER:  postgresadmin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: postgresdb
+      PGDATA: /data
+    networks:
+      - pg-net
+    volumes:
+      - ./postgres-1/pgdata:/data 
+      - ./postgres-1/config:/config 
+      - ./postgres-1/archive:/mnt/server/archive 
+#Crete the replication user with a password
+# createuser -U postgresadmin -P -c 5 --replication replicationUser
+#PataDeCarbra@2020
+
+
+
+  back-up-taker:
+    container_name: pg-backup-tool
+    image: "postgres:15.0"
+    entrypoint: sleep 3600
+    networks:
+      - pg-net
+    volumes:
+      - ./postgres-2/pgdata:/data
+#Exec into the container and run the following command
+# pg_basebackup -h pg-master -p 5432 -U replicationUser -D /data/ -Fp -Xs -R
+
+  stand-by:
+    container_name: pg-stand-by
+    image: "postgres:15.0"
+    command:
+      - "postgres"
+      - "-c"
+      - "config_file=/config/postgresql.conf"
+    ports:
+     - 5001:5432
+    environment:
+      POSTGRES_USER:  postgresadmin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: postgresdb
+      PGDATA: /data
+    networks:
+      - pg-net
+    volumes:
+      - ./postgres-2/pgdata:/data 
+      - ./postgres-2/config:/config 
+      - ./postgres-2/archive:/mnt/server/archive 
+networks:
+  pg-net:
+    driver: bridge

@@ -1,0 +1,15 @@
+## @param replicaCount Number of Nginx replicas to deploy
+replicaCount: 1
+
+image:
+  name: nginx
+  tag: '1.27.3'
+
+containerPorts:
+  http: 80
+
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80

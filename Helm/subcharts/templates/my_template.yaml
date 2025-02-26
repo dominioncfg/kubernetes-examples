@@ -1,0 +1,74 @@
+{{- /* 
+  This is a multiline GO Lang comment and wont be rendered in the output
+*/ -}}
+
+
+# This is a YAML Comment and will be rendered in the output
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  labels:    
+    #Functions Example:
+    withoutPipeline: {{ upper (quote .Values.testExample) }}
+    withPipeline: {{ .Values.testExample | quote | upper }}
+    #Use Named Template:
+    {{- include "template-example.labels" . | nindent 4 }}
+    
+    #If Else
+    logLevel: |
+      {{- if eq .Values.logLevel "debug" }}
+      DEBUG
+      {{- else if eq .Values.logLevel "info" }}
+      INFO
+      {{- else }}
+      ERROR
+      {{- end }}
+    
+    #Variables (Remember they have scopes)
+    # Define a variable:
+    {{- $variableLabelValue := "my-application" }}  
+    
+    # Change a variable:
+   {{- $variableLabelValue = "my-application" }}  
+    
+    # Use a variable:
+    variableLabel: {{ $variableLabelValue }} 
+   
+    # Use A List
+    {{- range .Values.exmpleList | default list }}
+    {{- /*Range operator overrides the context (. object) and set each list element as a value*/ -}}
+    {{ . | nindent 4}}: {{ . | quote }}
+    {{- end }}
+
+    # Use A Dictionary
+    {{- range $key, $value := .Values.testDict | default dict }}
+    {{- /*Range operator overrides the context (. object) and set each list element as a value*/ -}}
+    {{- $key  | nindent 4}}: "{{ $value }}"
+    {{- end }}
+
+    #With Blocks: They Change the Context Variable (.) that way it makes easier to use nested variables mostly
+    {{ with .Values.nestedValue.firstLevelNestingPropertyOne }}
+    firstProperty: {{ .secondLevelNestingPropertyOne }}
+    secondProperty: "{{ .secondLevelNestingPropertyTwo }}"
+    {{ end }}
+
+    #Validation Using Validation Funcctions
+    myPort :  {{- include "template-example.validator.validatePort" .Values.myPort}}
+  replicas:  {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: nginx
+        image: '1.27.3'
+        ports:
+        - containerPort: 80
+

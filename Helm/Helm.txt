@@ -1,0 +1,107 @@
+------Repositories-------
+1. List:
+helm repo list
+
+2. Add:
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+3. Update:
+For All Repos
+helm repo update
+For Single Repo 
+helm repo update <RepositoryName>
+
+4. Remove Repo: 
+helm repo remove bitnami
+
+5. List versions
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+
+
+--------Manage Helm Charts and Releases-------------
+List Releases:
+helm list
+
+Install Artifact Hub Release:
+helm install <ReleaseName> <Chart>
+helm install my-release oci://registry-1.docker.io/bitnamicharts/nginx
+
+helm install <release-name> <chart-name> --version <chart-version>
+helm install my-release oci://registry-1.docker.io/bitnamicharts/nginx --version 18.3.6
+
+helm install my-release oci://registry-1.docker.io/bitnamicharts/nginx
+
+helm install my-release oci://registry-1.docker.io/bitnamicharts/nginx --version 19.0.0 
+
+Hel Get Vaues of Release:
+helm get values my-release
+
+Uninstall Release:
+helm uninstall my-release
+helm uninstall my-release --keep-history  --description <Description>
+
+Upgrade Relase:
+helm upgrade <release-name> <chart-name> --version <chart-version>
+helm upgrade my-release oci://registry-1.docker.io/bitnamicharts/nginx --version 19.0.0 
+Upgrade  Dry Run (Previerw changes)
+helm upgrade <release-name> <chart-name> --version <chart-version> --dry-run
+Upgrade with File:
+helm upgrade my-release oci://registry-1.docker.io/bitnamicharts/nginx -f nginx/values.yaml
+
+See the History of A release:
+helm history my-release
+
+
+Rollback:
+helm rollback my-release 1
+
+Upgrade Flags 
+    Reuse values => Retains the existing values and applies only the changes from the new chart version.
+    atomic => If the upgrade succeeds, everything works as expected. If the upgrade fails, Helm automatically rolls back to the last working release.
+    cleanup-on-fail => Ensures that failed releases are deleted instead of keeping them in a failed state. This is useful for avoiding clutter in your Helm history and preventing conflicts with future deployments.
+    debug => More Output
+    timeout => Operation timeouts
+
+
+-------Creating charts-----------------------
+Show the Manifest output of a chart:
+helm template <PathToChart>
+
+Validate (Linter) the Helm chart:
+helm lint <PathToChart>
+
+Create package for chart:
+helm package nginx
+
+Create a new package based on the template:
+helm create my-test-chart
+
+
+----------------Template Deep Dive------------------------------------
+Template-example chart include examples of the following:
+-Functions
+-Named Templates
+-If-Else
+-Variables
+-Range over List
+-Range Over Dictionaries
+-With Blocks 
+-Validation Functions
+
+
+---Subcharts
+--Helm Dependency commands
+-Install Subcharts
+-Pass values from partent to child
+-Global variables 
+-Include SUbchatrs (config or tags)
+
+
+--Advanced:
+Get Files
+Hooks
+Library Charts
+Test/TestHook
+Plugins-> Dashboard, Diff
+Unit Tests

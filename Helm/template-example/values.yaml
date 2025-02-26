@@ -1,0 +1,33 @@
+## @param replicaCount Number of Nginx replicas to deploy
+replicaCount: 1
+
+testExample: AbC
+
+
+logLevel: debug
+
+
+exmpleList:
+ - "A"
+ - "B"
+ - "C"
+
+testDict:
+  D : E
+  F: "G"
+  H: I
+
+
+nestedValue:
+  firstLevelNestingPropertyOne : 
+   secondLevelNestingPropertyOne: A
+   secondLevelNestingPropertyTwo: B
+
+
+validationObject:
+  myRequiredProperty : 1
+  anotherRequiredProperty : 2
+
+
+#Validation test must be betweeen 100-200
+myPort: 102

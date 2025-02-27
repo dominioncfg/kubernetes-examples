@@ -12,6 +12,8 @@ metadata:
   replicas:  {{ .Values.replicaCount }}
   selector:
     matchLabels:
+      #Here is how to use Global Variables
+      chartType: {{ .Values.global.subchartType }}
       app: {{ .Chart.Name }}
       release: {{ .Release.Name }}
   template:

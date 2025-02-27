@@ -6,3 +6,7 @@ replicaCount: 1
 #Setting Values Of Subcharts can be done by using the name as a key all of this values will be sent to ngnix chart
 nginx: 
   replicaCount: 5
+
+
+global:
+  subchartType: "my-awesome-subchart"

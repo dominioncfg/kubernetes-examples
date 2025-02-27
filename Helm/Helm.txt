@@ -79,7 +79,7 @@ helm create my-test-chart
 
 
 ----------------Template Deep Dive------------------------------------
-Template-example chart include examples of the following:
+template-example chart include examples of the following:
 -Functions
 -Named Templates
 -If-Else
@@ -90,15 +90,19 @@ Template-example chart include examples of the following:
 -Validation Functions
 
 
----Subcharts
+----------------Subcharts------------------------------------
+subcharts chart include examples of the following:
 --Helm Dependency commands
--Install Subcharts
+List:
+helm dependency list <PathToChart>
+Update:
+helm dependency update <PathToChart>
 -Pass values from partent to child
 -Global variables 
--Include SUbchatrs (config or tags)
+-Include Subchatrs (config or tags)
 
 
---Advanced:
+------------------Advanced------------------------------------
 Get Files
 Hooks
 Library Charts

@@ -1,0 +1,9 @@
+dependencies:
+- name: nginx
+  repository: https://charts.bitnami.com/bitnami
+  version: 19.0.0
+- name: mysubchart
+  repository: ""
+  version: 0.1.0
+digest: sha256:96bc2468c843eda6b57451cb039c27cdbbe23e1dee7263a8e055a8ff042f0558
+generated: "2025-02-26T22:37:22.9961977+01:00"

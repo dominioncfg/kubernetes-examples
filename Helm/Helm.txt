@@ -103,9 +103,15 @@ helm dependency update <PathToChart>
 
 
 ------------------Advanced------------------------------------
-Get Files
+Advanced Folder contains examples of the following:
+Get Config Map from Files
 Hooks
 Library Charts
 Test/TestHook
+Unit Tests:
+    1. Install the Pluggin:
+helm plugin install https://github.com/helm-unittest/helm-unittest
+    2. List Plugins
+helm plugin list 
+
 Plugins-> Dashboard, Diff
-Unit Tests

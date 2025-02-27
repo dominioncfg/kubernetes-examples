@@ -1,0 +1,7 @@
+apiVersion: v2
+name: mysubchart
+description: A Subchart
+# A library Chart is basically a chart that does not render anything
+type: library
+version: 0.1.0
+appVersion: 1.27.3

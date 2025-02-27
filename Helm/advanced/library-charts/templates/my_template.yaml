@@ -1,0 +1,22 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  labels:    
+  replicas:  {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+    {{- include "library-chat.labels" .Values.myPort}}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: nginx
+        image: '1.27.3'
+        ports:
+        - containerPort: 80
+

@@ -1,0 +1,3 @@
+## @param replicaCount Number of Nginx replicas to deploy
+replicaCount: 1
+

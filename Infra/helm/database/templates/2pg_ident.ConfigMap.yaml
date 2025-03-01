@@ -1,0 +1,10 @@
+
+
+#------------------------------------pg_ident.conf------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-ident-config-map
+data:
+  pg_ident.conf : |
+    #Empty File

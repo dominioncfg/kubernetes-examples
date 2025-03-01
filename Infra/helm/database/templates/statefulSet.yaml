@@ -1,0 +1,113 @@
+#------------------------------------Statefult Set Database------------------------
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-db-rset
+  labels:
+   {{- include "database.commonLabels" . | nindent 6}}
+spec:
+  serviceName:  {{ .Release.Name }}-{{ .Chart.Name }}-db-svc
+  replicas: 1
+  selector:
+    matchLabels:
+        {{- include "database.matchLabels" . | nindent 6}}
+  template:
+    metadata:
+      labels:
+         {{- include "database.matchLabels" . | nindent 6}}
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-{{ .Chart.Name }}-rset
+        image: {{ include "database.buildImageFromValues" .Values.image}}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: [ "docker-entrypoint.sh", "-c", "config_file=/config/postgresql.conf" ]
+        ports:
+        - containerPort: {{ .Values.dbConfig.port }}
+          name: postgres
+        startupProbe:
+         {{- with  .Values.probes.startup }}
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - pg_isready -U $POSTGRES_USER
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+          failureThreshold: {{  .failureThreshold }}
+          {{- end }}
+        livenessProbe:
+          {{- with  .Values.probes.liveness }}
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - $POSTGRES_USER
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+          timeoutSeconds: {{ .timeoutSeconds }}
+          {{- end }}
+        readinessProbe:
+          {{- with  .Values.probes.readiness }}
+          tcpSocket:
+            port: {{ $.Values.dbConfig.port }}
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+          {{- end }}
+        env:
+        {{- $credentialsSecretName := ternary .Values.dbConfig.credentials.existingSecretName (printf "%s-%s-pg-cred-secret" .Release.Name .Chart.Name) .Values.dbConfig.credentials.useExistingSecret }}
+        - name: PGDATA
+          value: /data
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ $credentialsSecretName }}  
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ $credentialsSecretName }} 
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          value: {{ .Values.dbConfig.defaultDbName }}
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /data
+        - name: archive-data
+          mountPath: /mnt/server/archive 
+        - name: pg-config-volume
+          mountPath: /config
+        - name: startup-script-volume
+          mountPath: /docker-entrypoint-initdb.d/script.sql
+          subPath: script.sql
+
+      volumes:
+        - name: startup-script-volume
+          configMap:
+            name: {{ .Release.Name }}-{{ .Chart.Name }}-startup-config-map
+        - name: pg-config-volume
+          projected:
+            sources:
+            - configMap:
+                name: {{ .Release.Name }}-{{ .Chart.Name }}-hba-config-map
+            - configMap:
+                name: {{ .Release.Name }}-{{ .Chart.Name }}-ident-config-map
+            - configMap:
+                name: {{ .Release.Name }}-{{ .Chart.Name }}-pg-config-map
+           
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi
+  - metadata:
+      name: archive-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi
+
+

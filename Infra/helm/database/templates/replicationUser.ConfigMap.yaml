@@ -1,0 +1,8 @@
+#------------------------------------Startup Sql.conf------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-startup-config-map
+data:
+  script.sql: |
+   CREATE ROLE replicationuser WITH LOGIN PASSWORD '{{- .Values.dbConfig.replication.replicationUserPassword}}' REPLICATION;

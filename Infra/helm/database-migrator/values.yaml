@@ -1,0 +1,37 @@
+image:
+  repositoryUrl: host.minikube.internal:5000
+  repositoryName: students-db-migrator
+  tag: v1.4
+  pullPolicy: Always
+
+replicaCount: 2
+resources:
+  limits:
+    cpu: 220m
+    memory: 275Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+
+
+jobSettings:
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 300
+  activeDeadlineSeconds: 100
+
+databaseConnectionStringManagement:
+  #Disable this Section entirely
+  inject: true 
+  createSecret: true
+  #Settings when create settings is true:
+  databaseServiceName: 'students-pg-master-sset-0.students-pg-master-svc'
+  databasePort: 5432
+  databaseName: studentsdb
+  databaseUserName: 'studentApiAdmin'
+  databasePassword: 'PataDeCabra@2020'
+
+  #Only relevant when createSecret=false
+  existingSecretName: ''

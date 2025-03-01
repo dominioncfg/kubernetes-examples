@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: students-database-migrator-job
+  labels:
+    {{- include "database-migrator.commonLabels" . | nindent 6}}
+spec:
+  completions: {{.Values.jobSettings.completions }}
+  parallelism: {{.Values.jobSettings.parallelism }}
+  backoffLimit: {{ .Values.jobSettings.backoffLimit }}
+  ttlSecondsAfterFinished: {{.Values.jobSettings.ttlSecondsAfterFinished }}
+  activeDeadlineSeconds: {{.Values.jobSettings.activeDeadlineSeconds }}
+  template:
+    spec:
+      containers:
+      - name: students-database-migrator
+        image: {{ include "database-migrator.buildImageFromValues" .Values.image}}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          {{- with  .Values.resources }}
+          limits:
+            cpu: {{ .limits.cpu }}
+            memory: {{ .limits.memory }}
+          requests:
+            cpu: {{ .requests.cpu }}
+            memory: {{ .requests.memory }}
+          {{- end }}        
+        env:
+         {{- if  eq .Values.databaseConnectionStringManagement.inject true }} 
+         - name: ConnectionStrings__PgSql
+           valueFrom:
+              secretKeyRef:
+                name: {{ include "database-migrator.getDatabaseConfigSecretName" .}}
+                key: pgSqlConnectionString
+          {{- end }}        
+      restartPolicy: OnFailure

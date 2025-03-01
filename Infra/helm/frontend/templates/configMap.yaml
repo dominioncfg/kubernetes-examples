@@ -1,0 +1,9 @@
+{{- if eq .Values.backendConfig.useNewSecret true}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-backend-cfg
+data:
+  settings.js:  
+    backendUrl = '{{ .Values.backendConfig.newSecretBackendUrl }}';
+{{- end }}

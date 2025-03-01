@@ -1,0 +1,37 @@
+image:
+  repositoryUrl: host.minikube.internal:5000
+  repositoryName: frontend-server
+  tag: v1.4
+  pullPolicy: Always
+
+
+replicaCount: 2
+resources:
+  limits:
+    cpu: 220m
+    memory: 275Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+probes:
+  liveness:
+    path: /
+    port: 80
+    initialDelaySeconds: 3
+    periodSeconds: 3
+  readiness:
+    path: /
+    port: 80
+    initialDelaySeconds: 3
+    periodSeconds: 3
+
+ports:
+  deployment: 80
+  service: 80
+
+backendConfig:
+  useNewSecret: true
+  newSecretBackendUrl: /api
+  existingSecretName: ''
+ 

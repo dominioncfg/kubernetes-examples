@@ -1,0 +1,57 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  {{ .Release.Name }}-{{ .Chart.Name }}-dpl
+  labels:
+    {{- include "frontend.commonLabels" . | nindent 6}}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "frontend.matchLabels" . | nindent 6}}
+  template:
+    metadata:
+      labels:
+      {{- include "frontend.commonLabels" . | nindent 8}}
+      {{- include "frontend.matchLabels" . | nindent 8}}
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-{{ .Chart.Name }}-rset
+        image: {{ include "frontend.buildImageFromValues" .Values.image}}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.ports.deployment }}
+        resources:
+          {{- with  .Values.resources }}
+          limits:
+            cpu: {{ .limits.cpu }}
+            memory: {{ .limits.memory }}
+          requests:
+            cpu: {{ .requests.cpu }}
+            memory: {{ .requests.memory }}
+          {{- end }}        
+        livenessProbe:
+        {{- with  .Values.probes.liveness }}
+          httpGet:
+            path:  {{ .path }}
+            port:  {{ .port }}
+            httpHeaders:
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+        {{- end }}
+        {{- with  .Values.probes.readiness }}
+        readinessProbe:
+          httpGet:
+            path: {{ .path }}
+            port: {{ .port }}
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+        {{- end }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: /usr/share/nginx/html/config        
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "frontend.getConfigSecretName" .}}

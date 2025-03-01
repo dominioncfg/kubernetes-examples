@@ -1,0 +1,77 @@
+# Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-dpl
+  labels:
+    {{- include "backend.commonLabels" . | nindent 6}}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "backend.matchLabels" . | nindent 6}}
+  template:
+    metadata:
+      labels:
+        {{- include "backend.commonLabels" . | nindent 8}}
+        {{- include "backend.matchLabels" . | nindent 8}}
+    spec:
+     {{- if  eq .Values.migrationJob.waitForMigrationJob true }}
+      initContainers:
+      - name: "students-api-init"
+        image: "groundnuty/k8s-wait-for:1.3"
+        imagePullPolicy: Always
+        args: 
+        - "job"
+        - "students-database-migrator-job"
+      {{- end }}
+      containers:
+      - name: {{ .Release.Name }}-{{ .Chart.Name }}-rset
+        image: {{ include "backend.buildImageFromValues" .Values.image}}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.ports.deployment }}
+        resources:
+            {{- with  .Values.resources }}
+            limits:
+              cpu: {{ .limits.cpu }}
+              memory: {{ .limits.memory }}
+            requests:
+              cpu: {{ .requests.cpu }}
+              memory: {{ .requests.memory }}
+            {{- end }}        
+        startupProbe:
+          {{- with  .Values.probes.startup }}
+          httpGet:
+            path: {{ .path }}
+            port: {{ .port }}
+          failureThreshold: {{ .failureThreshold }}
+          periodSeconds: {{ .periodSeconds }}
+          {{- end }}
+        livenessProbe:
+          {{- with  .Values.probes.liveness }}
+          httpGet:
+            path: {{ .path }}
+            port: {{ .port }}
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+          timeoutSeconds: {{ .timeoutSeconds }}
+          failureThreshold: {{ .failureThreshold }}
+          {{- end }}
+        readinessProbe:
+          {{- with  .Values.probes.readiness }}
+          httpGet:
+            path: {{ .path }}
+            port: {{ .port }}
+          successThreshold: {{ .successThreshold }}
+          {{- end }}
+        env:
+        - name: applicationUrl
+          value: "http://localhost:{{ .Values.ports.deployment }}"
+        {{- if  eq .Values.databaseConnectionStringManagement.inject true }} 
+        - name: ConnectionStrings__PgSql
+          valueFrom:
+            secretKeyRef:
+               name: {{ include "backend.getDatabaseConfigSecretName" .}}
+               key: pgSqlConnectionString
+        {{- end }}

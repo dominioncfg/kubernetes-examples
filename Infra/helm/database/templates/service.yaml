@@ -7,7 +7,7 @@ metadata:
     {{- include "database.commonLabels" . | nindent 4}}
 spec:
   ports:
-  - port: {{- .Values.dbConfig.Port }}
+  - port: {{ .Values.dbConfig.port }}
     name: postgres
   clusterIP: None
   selector:

@@ -27,5 +27,13 @@ helm install students-frontend ./frontend
 helm upgrade students-frontend  ./frontend
 helm uninstall students-frontend ./frontend
 
+
+//Routes
+helm template students-app-rules ./ingress-configuration-routes
+helm install students-app-rules ./ingress-configuration-routes
+helm upgrade students-app-rules ./ingress-configuration-routes
+helm uninstallstudents-app-rules ./ingress-configuration-routes
+
+
 //Sql Container
 psql -h students-db-students-database-db-rset-0.students-db-students-database-db-svc -U studentApiAdmin -d studentsdb

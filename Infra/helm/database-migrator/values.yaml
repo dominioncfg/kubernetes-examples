@@ -13,8 +13,6 @@ resources:
     cpu: 200m
     memory: 256Mi
 
-
-
 jobSettings:
   completions: 1
   parallelism: 1
@@ -25,13 +23,4 @@ jobSettings:
 databaseConnectionStringManagement:
   #Disable this Section entirely
   inject: true 
-  createSecret: false
-  #Settings when create settings is true:
-  databaseServiceName: 'students-db-students-database-db-rset-0.students-db-students-database-db-svc'
-  databasePort: 5432
-  databaseName: studentsdb
-  databaseUserName: 'studentApiAdmin'
-  databasePassword: 'PataDeCabra@2020'
-
-  #Only relevant when createSecret=false
   existingSecretName: 'students-db-students-database-cn-string-cfg'

@@ -30,7 +30,7 @@ spec:
          - name: ConnectionStrings__PgSql
            valueFrom:
               secretKeyRef:
-                name: {{ include "database-migrator.getDatabaseConfigSecretName" .}}
+                name: {{ .Values.databaseConnectionStringManagement.existingSecretName}}
                 key: pgSqlConnectionString
           {{- end }}        
       restartPolicy: OnFailure

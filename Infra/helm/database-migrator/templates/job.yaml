@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: students-database-migrator-job
+  name: {{ .Release.Name }}-{{ .Chart.Name }}--dbmgr-job
   labels:
     {{- include "database-migrator.commonLabels" . | nindent 6}}
 spec:
@@ -13,7 +13,7 @@ spec:
   template:
     spec:
       containers:
-      - name: students-database-migrator
+      - name: {{ .Release.Name }}-{{ .Chart.Name }}-dbmgr-cont
         image: {{ include "database-migrator.buildImageFromValues" .Values.image}}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         resources:

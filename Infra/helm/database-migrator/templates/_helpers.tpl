@@ -4,16 +4,6 @@
 {{- end -}}
 
 
-#Get Backend Config Secret Name
-{{- define "database-migrator.getDatabaseConfigSecretName" -}}
-{{- if eq .Values.databaseConnectionStringManagement.createSecret true -}}
- {{ .Release.Name }}-{{ .Chart.Name }}-migrator-cfg
-{{- else -}}
- {{ .Values.databaseConnectionStringManagement.existingSecretName}}
-{{- end -}}
-{{- end -}}
-
-
 #Common Labels For Identifying the resources
 {{- define "database-migrator.commonLabels" -}}
 app: students-service

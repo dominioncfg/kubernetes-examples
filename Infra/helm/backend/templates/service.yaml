@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name:  {{ .Release.Name }}-{{ .Chart.Name }}-svc
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
      {{- include "backend.matchLabels" . | nindent 6}}
   ports:

@@ -16,6 +16,10 @@ helm install students-db-migrator ./database-migrator
 helm upgrade students-db-migrator ./database-migrator
 
 //Backend
+helm template students-db-backend ./backend
+helm install students-db-backend ./backend
+helm upgrade students-db-backend ./backend
+helm uninstall students-db-backend ./backend
 students-database-migrator-job
 
 

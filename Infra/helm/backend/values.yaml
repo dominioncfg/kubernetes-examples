@@ -43,18 +43,10 @@ migrationJob:
   waitForMigrationJob: true
   # When  waitForMigrationJob and deployMigrationJobRbac are true it will deploy a new RBAC Role so that wait for container can connect to Kubectl api 
   deployMigrationJobRbac: true
+  migrationJobName: 'students-db-migrator-studends-database-migrator--dbmgr-job'
 
 
 databaseConnectionStringManagement:
   #Disable this Section entirely
   inject: true 
-  createSecret: true
-  #Settings when create settings is true:
-  databaseServiceName: 'students-pg-master-sset-0.students-pg-master-svc'
-  databasePort: 5432
-  databaseName: studentsdb
-  databaseUserName: 'studentApiAdmin'
-  databasePassword: 'PataDeCabra@2020'
-
-  #Only relevant when createSecret=false
-  existingSecretName: ''
+  existingSecretName: 'students-db-students-database-cn-string-cfg'

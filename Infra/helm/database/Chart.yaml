@@ -2,5 +2,5 @@ apiVersion: v2
 name: students-database
 description: A Helm chart for deploying A simple api database to the Students Backend
 type: application
-version: 0.3.0
+version: 0.2.1
 appVersion: 1.4.0

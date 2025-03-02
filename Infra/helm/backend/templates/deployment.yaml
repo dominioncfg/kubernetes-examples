@@ -23,7 +23,7 @@ spec:
         imagePullPolicy: Always
         args: 
         - "job"
-        - "students-database-migrator-job"
+        - "{{.Values.migrationJob.migrationJobName}}"
       {{- end }}
       containers:
       - name: {{ .Release.Name }}-{{ .Chart.Name }}-rset
@@ -72,6 +72,6 @@ spec:
         - name: ConnectionStrings__PgSql
           valueFrom:
             secretKeyRef:
-               name: {{ include "backend.getDatabaseConfigSecretName" .}}
+               name: {{ .Values.databaseConnectionStringManagement.existingSecretName}}
                key: pgSqlConnectionString
         {{- end }}

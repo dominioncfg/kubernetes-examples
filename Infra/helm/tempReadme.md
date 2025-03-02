@@ -16,12 +16,16 @@ helm install students-db-migrator ./database-migrator
 helm upgrade students-db-migrator ./database-migrator
 
 //Backend
-helm template students-db-backend ./backend
-helm install students-db-backend ./backend
-helm upgrade students-db-backend ./backend
-helm uninstall students-db-backend ./backend
-students-database-migrator-job
+helm template students-backend ./backend
+helm install students-backend ./backend
+helm upgrade students-backend ./backend
+helm uninstall students-backend ./backend
 
+//Frontend
+helm template students-frontend ./frontend
+helm install students-frontend ./frontend
+helm upgrade students-frontend  ./frontend
+helm uninstall students-frontend ./frontend
 
 //Sql Container
 psql -h students-db-students-database-db-rset-0.students-db-students-database-db-svc -U studentApiAdmin -d studentsdb

@@ -19,6 +19,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D050E969-3BAB-43F9-A4E9-DA798A0FCF43}"
 	ProjectSection(SolutionItems) = preProject
 		Deployment.md = Deployment.md
+		DeploymentHelm.md = DeploymentHelm.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KubernetesExample.DbMigratorRunner", "KubernetesExample.DbMigratorRunner\KubernetesExample.DbMigratorRunner.csproj", "{B6AF6B13-6976-4729-8C0F-2AD5C9BEE647}"

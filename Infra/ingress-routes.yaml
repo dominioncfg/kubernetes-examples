@@ -12,7 +12,7 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: backend-service
+            name: backend-bff-service
             port:
               number: 8080
   ingressClassName: nginx

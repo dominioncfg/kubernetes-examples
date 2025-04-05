@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{1A2BAE51-1CA9-4C0E-8CD4-DCA756DD0323}"
 	ProjectSection(SolutionItems) = preProject
 		Infra\backend.yaml = Infra\backend.yaml
+		Infra\backendforfrontend.yaml = Infra\backendforfrontend.yaml
 		Infra\database-migrator.yaml = Infra\database-migrator.yaml
 		Infra\database.yaml = Infra\database.yaml
 		Infra\debug-container.yaml = Infra\debug-container.yaml
@@ -31,7 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Local", "Local", "{F804CA41
 		Infra\Local\auth-secrets.yaml = Infra\Local\auth-secrets.yaml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesExample.BFF", "KubernetesExample.BFF\KubernetesExample.BFF.csproj", "{D825DEFA-95CE-452E-BE71-2D456DF77DD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KubernetesExample.BFF", "KubernetesExample.BFF\KubernetesExample.BFF.csproj", "{D825DEFA-95CE-452E-BE71-2D456DF77DD4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

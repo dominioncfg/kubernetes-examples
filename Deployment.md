@@ -6,8 +6,9 @@ This guide provides a step-by-step walkthrough for deploying a full-stack applic
 
 1. **PostgreSql Database:** The persistent data storage solution. Using a Master Replica DB Cluster
 2. **.NET Core Web API:** A backend service that handles business logic and interacts with the database.
-3. **Database Migration Job:** A utility for deploying and applying database schema migrations.
-4. **Nginx Frontend:** A web server hosting the client-facing interface.
+3. **.NET Core Web API Backend For Frontend:** A backend service that acts a BFF for the Web Api.
+4. **Database Migration Job:** A utility for deploying and applying database schema migrations.
+5. **Nginx Frontend:** A web server hosting the client-facing interface.
 
 The deployment process leverages Kubernetes features such as pods, services, and ingress controllers to orchestrate and expose the application. By following this guide, you'll learn how to:
 
@@ -60,7 +61,7 @@ minikube config set insecure-registry "host.docker.internal:5000"
 minikube start
 ```
 
-### Check if contianer is accessible
+### Check if contianer is accessible (Optional)
 
 ```bash
 minikube ssh 
@@ -77,7 +78,7 @@ kubectl apply -f Infra/database-master.yaml
 
 ```
 
-### Apply Replica Database Stateful Set
+### Apply Replica Database Stateful Set (Optional)
 ```bash
 kubectl apply -f Infra/database-replica.yaml
 ```
@@ -118,6 +119,24 @@ docker push localhost:5000/students-api:v1.4
 ```bash
 kubectl apply -f Infra/backend.yaml
 ```
+Note:  Backend will wait for the Database Migrator Job to be present. If you take to long Job will be removed after completition, so you may need to run it again
+
+## Deploy the BFF
+
+### Build BFF Image
+```bash
+docker build -t localhost:5000/students-bff:v1.4 -f KubernetesExample.BFF/Dockerfile .
+```
+
+###  Push The Image to the local repository
+```bash
+docker push localhost:5000/students-bff:v1.4
+```
+
+### Apply BFF Deployment
+```bash
+kubectl apply -f Infra/backendforfrontend.yaml
+```
 
 ---
 
@@ -147,6 +166,9 @@ kubectl apply -f Infra/frontend.yaml
 kubectl apply -f Infra/ngnix-controller.yaml
 ```
 ### Deploy the Routes
+
+Note: Wait for the Ngnix Controller to be ready
+
 ```bash
 kubectl apply -f Infra/ingress-routes.yaml
 ```
@@ -168,6 +190,7 @@ The App should be listening in `http://127.0.0.1:XXXXX/app`
 kubectl delete -f Infra/ingress-routes.yaml
 kubectl delete -f Infra/frontend.yaml
 kubectl delete -f Infra/backend.yaml
+kubectl delete -f Infra/backendforfrontend.yaml
 kubectl delete -f Infra/database-migrator.yaml
 kubectl delete -f Infra/database-replica.yaml 
 kubectl delete -f Infra/database-master.yaml 

@@ -1,0 +1,85 @@
+# --------------Secret Env Variable with the Connection String
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bff-backend-settings
+data:
+  Backends__StudentsApi: "http://backend-service:8080"
+    
+   
+
+---
+# --------------Deployement and BFF Service Itself
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-bff-deployment
+  labels:
+    app: students-bff
+    type: backend
+    subtype: api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      service-name: students-bff
+  template:
+    metadata:
+      labels:
+        app: students-bff
+        type: backend
+        subtype: api
+        service-name: students-bff
+    spec:
+      containers:
+      - name: backend-bff
+        image: host.minikube.internal:5000/students-bff:v1.4
+        imagePullPolicy: Always
+        resources:
+          limits:
+             cpu: 220m
+             memory: 275Mi
+          requests:
+            cpu: 200m
+            memory: 256Mi 
+        startupProbe:
+          httpGet:
+            path: /health/startup
+            port: 8080
+          failureThreshold: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          successThreshold: 3
+        ports:
+        - containerPort: 8080
+        env:
+        - name: Backends__StudentsApi
+          valueFrom:
+            configMapKeyRef:
+              name: bff-backend-settings
+              key: Backends__StudentsApi
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-bff-service
+spec:
+  type: ClusterIP
+  selector:
+    service-name: students-bff
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

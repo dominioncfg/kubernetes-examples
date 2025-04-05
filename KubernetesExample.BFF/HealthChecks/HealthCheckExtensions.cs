@@ -15,7 +15,7 @@ public static class HealthCheckExtensions
         .Services
             .AddHealthChecks()
                 .AddCheck<DefaultHealthyCheck>("DefaultHealthyCheck", HealthStatus.Healthy, [DumbHealthCheckTag])
-                .AddCheck<StudentsApiHealthCheck>("StudentsApi", HealthStatus.Healthy, [SmartHealthCheckTag]);
+                .AddCheck<StudentsApiHealthCheck>("StudentsApi", HealthStatus.Unhealthy, [SmartHealthCheckTag]);
 
         return builder;
     }

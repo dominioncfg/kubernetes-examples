@@ -31,6 +31,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Local", "Local", "{F804CA41
 		Infra\Local\auth-secrets.yaml = Infra\Local\auth-secrets.yaml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KubernetesExample.BFF", "KubernetesExample.BFF\KubernetesExample.BFF.csproj", "{D825DEFA-95CE-452E-BE71-2D456DF77DD4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{5BF6B731-3F6B-433D-9965-D10432F218D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BF6B731-3F6B-433D-9965-D10432F218D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BF6B731-3F6B-433D-9965-D10432F218D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D825DEFA-95CE-452E-BE71-2D456DF77DD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D825DEFA-95CE-452E-BE71-2D456DF77DD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D825DEFA-95CE-452E-BE71-2D456DF77DD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D825DEFA-95CE-452E-BE71-2D456DF77DD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

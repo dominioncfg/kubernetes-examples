@@ -1,0 +1,6 @@
+@KubernetesExample.BFF_HostAddress = http://localhost:5194
+
+GET {{KubernetesExample.BFF_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

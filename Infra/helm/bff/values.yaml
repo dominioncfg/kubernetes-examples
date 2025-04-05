@@ -1,0 +1,51 @@
+image:
+  repositoryUrl: host.minikube.internal:5000
+  repositoryName: students-bff
+  tag: v1.4
+  pullPolicy: Always
+
+replicaCount: 2
+resources:
+  limits:
+    cpu: 220m
+    memory: 275Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+probes:
+  startup:
+    path: /health/startup
+    port: 8080
+    failureThreshold: 30
+    periodSeconds: 10
+  liveness:
+    path: /healthz
+    port: 8080
+    initialDelaySeconds: 3
+    periodSeconds: 3
+    timeoutSeconds: 2
+    failureThreshold: 3
+  readiness:
+    path: /ready
+    port: 8080
+    initialDelaySeconds: 3
+    periodSeconds: 3
+    successThreshold: 3
+
+ports:
+  deployment: 8080
+  service: 8080
+
+
+backends:
+  studentsApi:
+    #Disable this section Entirely
+    inject: true 
+    injectFromExistingSecret: false
+    #When injectFromExistingSecret is false, We need to know where is the backend:
+    backendSchema: http
+    backendServiceName: students-backend-studends-backend-api-svc
+    backendPort: 8080
+    #When injectFromExistingSecret is false, provide Secret Name
+    existingSecretName: 'students-backend-students-url-cfg'

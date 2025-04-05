@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-dpl
+  labels:
+    {{- include "backend.commonLabels" . | nindent 6}}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "backend.matchLabels" . | nindent 6}}
+  template:
+    metadata:
+      labels:
+        {{- include "backend.commonLabels" . | nindent 8}}
+        {{- include "backend.matchLabels" . | nindent 8}}
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-{{ .Chart.Name }}-rset
+        image: {{ include "backend.buildImageFromValues" .Values.image}}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.ports.deployment }}
+        resources:
+            {{- with  .Values.resources }}
+            limits:
+              cpu: {{ .limits.cpu }}
+              memory: {{ .limits.memory }}
+            requests:
+              cpu: {{ .requests.cpu }}
+              memory: {{ .requests.memory }}
+            {{- end }}        
+        startupProbe:
+          {{- with  .Values.probes.startup }}
+          httpGet:
+            path: {{ .path }}
+            port: {{ .port }}
+          failureThreshold: {{ .failureThreshold }}
+          periodSeconds: {{ .periodSeconds }}
+          {{- end }}
+        livenessProbe:
+          {{- with  .Values.probes.liveness }}
+          httpGet:
+            path: {{ .path }}
+            port: {{ .port }}
+          initialDelaySeconds: {{ .initialDelaySeconds }}
+          periodSeconds: {{ .periodSeconds }}
+          timeoutSeconds: {{ .timeoutSeconds }}
+          failureThreshold: {{ .failureThreshold }}
+          {{- end }}
+        readinessProbe:
+          {{- with  .Values.probes.readiness }}
+          httpGet:
+            path: {{ .path }}
+            port: {{ .port }}
+          successThreshold: {{ .successThreshold }}
+          {{- end }}
+        env:
+        {{- if  eq .Values.backends.studentsApi.inject true }} 
+      
+        {{- if  eq .Values.backends.studentsApi.injectFromExistingSecret false }}
+        - name: Backends__StudentsApi
+          valueFrom:
+            configMapKeyRef:
+              name: {{ $.Release.Name }}-{{ $.Chart.Name }}-be-api-details
+              key: Backends__StudentsApi
+        {{- else }}
+        - name: Backends__StudentsApi
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.backends.studentsApi.existingSecretName }}
+              key: Backends__StudentsApi
+        {{- end }}
+        {{- end }}

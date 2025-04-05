@@ -214,6 +214,14 @@ kubectl get pv
 kubectl delete pv <Name>
 ```
 
+### Delete Local Images
+```bash
+docker image rm localhost:5000/students-db-migrator:v1.4
+docker image rm localhost:5000/students-api:v1.4
+docker image rm localhost:5000/students-bff:v1.4 
+docker image rm localhost:5000/frontend-server:v1.4
+```
+
 ---
 ## Other scripts
 

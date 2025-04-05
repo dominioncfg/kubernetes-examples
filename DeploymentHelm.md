@@ -6,8 +6,9 @@ This guide provides a step-by-step walkthrough for deploying a full-stack applic
 
 1. **PostgreSql Database:** The persistent data storage solution. Using a Master Replica DB Cluster
 2. **.NET Core Web API:** A backend service that handles business logic and interacts with the database.
-3. **Database Migration Job:** A utility for deploying and applying database schema migrations.
-4. **Nginx Frontend:** A web server hosting the client-facing interface.
+3. **.NET Core Web API Backend For Frontend:** A backend service that acts a BFF for the Web Api.
+4. **Database Migration Job:** A utility for deploying and applying database schema migrations.
+5. **Nginx Frontend:** A web server hosting the client-facing interface.
 
 The deployment process leverages Kubernetes features such as pods, services, and ingress controllers to orchestrate and expose the application. By following this guide, you'll learn how to:
 
@@ -60,7 +61,7 @@ minikube config set insecure-registry "host.docker.internal:5000"
 minikube start
 ```
 
-### Check if contianer is accessible
+### Check if contianer is accessible (Optional)
 
 ```bash
 minikube ssh 
@@ -114,6 +115,24 @@ docker push localhost:5000/students-api:v1.4
 helm install students-backend Infra/helm/backend
 ```
 
+Note:  Backend will wait for the Database Migrator Job to be present. If you take to long Job will be removed after completition, so you may need to run it again
+
+---
+### Build BFF Image
+```bash
+docker build -t localhost:5000/students-bff:v1.4 -f KubernetesExample.BFF/Dockerfile .
+```
+
+###  Push The Image to the local repository
+```bash
+docker push localhost:5000/students-bff:v1.4
+```
+
+### Install BFF Deployment
+```bash
+helm install students-bff Infra/helm/bff
+```
+
 ---
 
 ## Deploy the Frontend
@@ -142,6 +161,9 @@ helm install students-frontend Infra/helm/frontend
 kubectl apply -f Infra/ngnix-controller.yaml
 ```
 ### Deploy the Routes
+
+Note: Wait for the Ngnix Controller to be ready
+
 ```bash
 helm install students-app-rules Infra/helm/ingress-configuration-routes
 ```
@@ -162,6 +184,7 @@ The App should be listening in `http://127.0.0.1:XXXXX/app`
 ```bash
 helm uninstall students-app-rules 
 helm uninstall students-frontend
+helm uninstall students-bff 
 helm uninstall students-backend 
 helm uninstall students-db-migrator
 helm uninstall students-db 
@@ -181,6 +204,14 @@ kubectl delete pvc postgres-data-students-db-students-database-db-rset-0
 kubectl get pv
 #If any PV exist do: 
 kubectl delete pv <Name>
+```
+
+### Delete Local Images
+```bash
+docker image rm localhost:5000/students-db-migrator:v1.4
+docker image rm localhost:5000/students-api:v1.4
+docker image rm localhost:5000/students-bff:v1.4 
+docker image rm localhost:5000/frontend-server:v1.4
 ```
 
 ---

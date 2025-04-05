@@ -1,0 +1,6 @@
+apiVersion: v2
+name: studends-backend-bff
+description: The BFF of this App
+type: application
+version: 0.1.0
+appVersion: 1.4.0

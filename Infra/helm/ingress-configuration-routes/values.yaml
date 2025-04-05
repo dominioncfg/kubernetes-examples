@@ -1,6 +1,6 @@
 endpoints:
   backend: 
-    name: students-backend-studends-backend-api-svc
+    name: students-bff-studends-backend-bff-svc
     port: 8080
   frontend: 
     name: students-frontend-studends-frontend-svc

@@ -16,6 +16,7 @@ service-name: {{ .Release.Name }}-{{ .Chart.Name }}-backend-api
 app: students-service
 type: backend
 subtype: dot-net-api
+version: "{{ .Values.image.tag }}"
 {{- end -}}
 
 

@@ -9,9 +9,10 @@
 
 #Common Labels For Identifying the resources
 {{- define "database.commonLabels" -}}
-app: students-service
+app: students-db
 type: database
 subtype: pg-sql
+version: "{{ .Values.image.tag }}"
 {{- end -}}
 
 #Function for matching labels between: Pods<-StatefulSet<-Service

@@ -14,7 +14,8 @@ service-name: {{ .Release.Name }}-{{ .Chart.Name }}-backend-api
 
 #Common Labels For Identifying the resources
 {{- define "backend.commonLabels" -}}
-app: students-service
+app: students-bff
 type: backend
 subtype: dot-net-api
+version: "{{ .Values.image.tag }}"
 {{- end -}}

@@ -11,6 +11,11 @@ spec:
   ttlSecondsAfterFinished: {{.Values.jobSettings.ttlSecondsAfterFinished }}
   activeDeadlineSeconds: {{.Values.jobSettings.activeDeadlineSeconds }}
   template:
+    metadata:
+      #Avoid Istio on this Job
+      #Future curl -sf -XPOST 127.0.0.1:15000/quitquitquit
+      annotations:
+        sidecar.istio.io/inject: "false"
     spec:
       containers:
       - name: {{ .Release.Name }}-{{ .Chart.Name }}-dbmgr-cont

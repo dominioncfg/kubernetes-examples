@@ -15,9 +15,10 @@ service-name: {{ .Release.Name }}-{{ .Chart.Name }}-frontend-server
 
 #Common Labels For Identifying the resources
 {{- define "frontend.commonLabels" -}}
-app: students-service
+app: students-frontend
 type: frontend
 subtype: http-server
+version: "{{ .Values.image.tag }}"
 {{- end -}}
 
 

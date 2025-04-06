@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-vs
+  labels:
+    {{- include "istio.commonLabels" . | nindent 6}}
+spec:
+  hosts:
+  - {{ .Values.serviceName }} # Kubernetes Service Name
+  http:
+  - route:
+    - destination:
+        host: {{ .Values.serviceName }} # Kubernetes Service Name
+        subset: oldVersion
+      weight: {{ .Values.oldVersion.weight }}
+    - destination:
+        host: {{ .Values.serviceName }} # Kubernetes Service Name
+        subset: newVersion
+      weight: {{ .Values.newVersion.weight }}

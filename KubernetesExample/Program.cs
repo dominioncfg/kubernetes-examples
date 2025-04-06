@@ -1,3 +1,4 @@
+using KubernetesExample.Settings;
 using KubernetesExample.SharedDataStorage;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 var connectionString = builder.Configuration.GetConnectionString("PgSql");
+builder.Services.Configure<VersioningSettings>(
+    builder.Configuration.GetSection(VersioningSettings.SectionName));
 
 builder.Services.AddDbContextPool<AppDbContext>(opt =>
                 opt.UseNpgsql(connectionString!,

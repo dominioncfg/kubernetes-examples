@@ -1,0 +1,6 @@
+apiVersion: v2
+name: studends-backend-api-canary-release-config
+description: A Helm chart for deploying A Istio Canary Release
+type: application
+version: 0.1.0
+appVersion: 1.4.0

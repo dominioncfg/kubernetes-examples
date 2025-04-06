@@ -50,3 +50,12 @@ databaseConnectionStringManagement:
   #Disable this Section entirely
   inject: true 
   existingSecretName: 'students-db-students-database-cn-string-cfg'
+
+
+#For Canary Releases:
+canaryReleases:
+  canaryUpgradeRelease: false
+  existingServiceName: students-bff-studends-backend-bff-svc
+
+#If this is true the endpoint will override the name (simulate a new version):
+mockNewVersion: false

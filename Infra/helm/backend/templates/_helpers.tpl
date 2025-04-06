@@ -7,7 +7,12 @@
 
 #Function for matching labels between: Pods<-Deployment<-Service
 {{- define "backend.matchLabels" -}}
+{{- if (eq .Values.canaryReleases.canaryUpgradeRelease false) -}}
 service-name: {{ .Release.Name }}-{{ .Chart.Name }}-backend-api
+{{- else -}}
+service-name: {{ .Values.canaryReleases.existingServiceName }}
+{{- end -}}
+
 {{- end -}}
 
 

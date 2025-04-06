@@ -75,3 +75,7 @@ spec:
                name: {{ .Values.databaseConnectionStringManagement.existingSecretName}}
                key: pgSqlConnectionString
         {{- end }}
+        {{- if (eq .Values.mockNewVersion true)}}
+        - name: Versioning__OverrideName
+          value: "true"
+        {{- end }}

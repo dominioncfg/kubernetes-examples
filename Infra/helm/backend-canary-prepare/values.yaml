@@ -1,0 +1,9 @@
+image:
+  tag: v1.5
+
+canaryReleases:
+  canaryUpgradeRelease: true
+  existingServiceName: students-backend-studends-backend-api-backend-api
+
+
+mockNewVersion: true

@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-dr
+  labels:
+    {{- include "istio.commonLabels" . | nindent 6}}
+spec:
+  host: {{ .Values.serviceName }} # Kubernetes Service Name
+  subsets:
+  - name: oldVersion # This is the name that needs to be refered to in Virtual Serives
+    labels: # select pods with this labels and assign them to this version
+      version: "{{ .Values.oldVersion.version }}"
+  - name: newVersion # This is the name that needs to be refered to in Virtual Serives
+    labels: # select pods with this labels and assign them to this version
+      version: "{{ .Values.newVersion.version }}"

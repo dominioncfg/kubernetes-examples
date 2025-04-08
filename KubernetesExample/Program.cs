@@ -9,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("PgSql");
 builder.Services.Configure<VersioningSettings>(
     builder.Configuration.GetSection(VersioningSettings.SectionName));
+builder.Services.Configure<FailingSettings>(
+    builder.Configuration.GetSection(FailingSettings.SectionName));
+
 
 builder.Services.AddDbContextPool<AppDbContext>(opt =>
                 opt.UseNpgsql(connectionString!,

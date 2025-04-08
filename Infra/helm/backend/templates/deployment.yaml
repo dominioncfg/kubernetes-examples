@@ -79,3 +79,9 @@ spec:
         - name: Versioning__OverrideName
           value: "true"
         {{- end }}
+        {{- if (eq .Values.mockFailures.enabled true)}}
+        - name: Failing__EnableRandomFailure
+          value: "true"
+        - name: Failing__FailureRate
+          value: "{{ .Values.mockFailures.rate }}"
+        {{- end }}

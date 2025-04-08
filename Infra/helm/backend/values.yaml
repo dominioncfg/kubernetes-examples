@@ -59,3 +59,8 @@ canaryReleases:
 
 #If this is true the endpoint will override the name (simulate a new version):
 mockNewVersion: false
+
+#If this is true the endpoint will fail randomly by the given rate (simulate a new failure):
+mockFailures:
+  enabled: false
+  rate: 0

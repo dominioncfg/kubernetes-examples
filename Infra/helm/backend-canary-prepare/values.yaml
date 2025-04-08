@@ -7,3 +7,9 @@ canaryReleases:
 
 
 mockNewVersion: true
+
+
+#If this is true the endpoint will fail randomly by the given rate (simulate a new failure):
+mockFailures:
+  enabled: false
+  rate: 0

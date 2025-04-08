@@ -2,6 +2,7 @@ backend:
   prefix: /api
   serviceName:  students-bff-studends-backend-bff-svc
   port: 8080
+  emulateSlow: false
 frontend:
   prefix: /app
   serviceName: students-frontend-studends-frontend-svc

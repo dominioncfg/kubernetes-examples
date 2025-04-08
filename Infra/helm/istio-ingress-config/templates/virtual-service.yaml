@@ -19,16 +19,23 @@ spec:
             host:  {{ .Values.frontend.serviceName}}
             port:
               number: {{ .Values.frontend.port}}
-    
+     
     - match:
       - uri:
           regex: "/api/(.*)"
       rewrite:
         uriRegexRewrite:
           match: "/api/(.*)"
-          rewrite: /\1  
+          rewrite: /\1
       route:
         - destination:
             host:  {{ .Values.backend.serviceName}}
             port:
               number:  {{ .Values.backend.port}}
+      {{- if (eq .Values.backend.emulateSlow true) }}
+      fault:
+        delay:
+          percentage:
+            value: 30.0  # 100% of requests
+          fixedDelay: 5s  # Delay each request by 5 seconds
+      {{- end }}  

@@ -1,0 +1,34 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-routing-vs
+  namespace: default
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - {{ .Release.Name }}-{{ .Chart.Name }}-students-gateway
+  http:
+    - match:
+        - uri:
+            prefix: {{ .Values.frontend.prefix}}
+      rewrite:
+        uri: "/"  # optional: rewrite /app to / if needed by frontend
+      route:
+        - destination:
+            host:  {{ .Values.frontend.serviceName}}
+            port:
+              number: {{ .Values.frontend.port}}
+    
+    - match:
+      - uri:
+          regex: "/api/(.*)"
+      rewrite:
+        uriRegexRewrite:
+          match: "/api/(.*)"
+          rewrite: /\1  
+      route:
+        - destination:
+            host:  {{ .Values.backend.serviceName}}
+            port:
+              number:  {{ .Values.backend.port}}

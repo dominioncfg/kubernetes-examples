@@ -1,0 +1,6 @@
+apiVersion: v2
+name: studends-api-gateway-istio
+description: A helm chart to configure istio api gateway
+type: application
+version: 0.1.0
+appVersion: 1.4.0

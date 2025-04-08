@@ -11,9 +11,9 @@ spec:
   - route:
     - destination:
         host: {{ .Values.serviceName }} # Kubernetes Service Name
-        subset: oldVersion
+        subset: oldVersion # Destination Rule Subset
       weight: {{ .Values.oldVersion.weight }}
     - destination:
         host: {{ .Values.serviceName }} # Kubernetes Service Name
-        subset: newVersion
+        subset: newVersion # Destination Rule Subset
       weight: {{ .Values.newVersion.weight }}

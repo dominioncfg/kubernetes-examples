@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-students-gateway
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway # or your custom ingress gateway selector
+  servers:
+    - port:
+        number: {{ .Values.gateway.port}}
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
